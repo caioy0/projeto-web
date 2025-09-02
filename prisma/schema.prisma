@@ -24,3 +24,25 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  price       Decimal
+  sale        Boolean  @default(false)
+  salePrice   Decimal?
+  quantity    Int
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Category {
+  id    String    @id @default(cuid())
+  name  String    @unique
+  products Product[]
+}
