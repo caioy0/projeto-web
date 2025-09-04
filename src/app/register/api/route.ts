@@ -1,7 +1,7 @@
 // src/app/api/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,14 +20,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
+    // const user = await prisma.user.create({
+    //   data: {
+    //     name,
+    //     email,
+    //     password: hashedPassword,
+    //   },
+    // });
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        password: hashedPassword,
+        password,
       },
     });
 

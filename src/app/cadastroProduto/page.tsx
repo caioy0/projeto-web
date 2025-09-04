@@ -1,9 +1,8 @@
-export default async function Checkout() {
-    
+export default async function CadastroProduto() {
     return(
         <div>
             <h1>
-                "Yo"
+                "yo"
             </h1>
         </div>
     );

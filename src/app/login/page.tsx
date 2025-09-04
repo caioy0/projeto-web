@@ -14,7 +14,7 @@ export default async function LoginPage() {
   // }
 
   return (
-    <div>
+    <div className="">
       <h1>Login</h1>
       {/* The form calls the Server Action directly */}
       <form>
