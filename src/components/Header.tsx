@@ -129,21 +129,6 @@ export default function Header() {
             </Link>
           </>
         )}
-
-        <a
-          href="https://instagram.com"
-          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 hover:shadow-md transition duration-300 ease-in-out px-4 py-2 rounded-md"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image 
-            src="/insta.svg" 
-            alt="Instagram" 
-            width={24} 
-            height={24} 
-            className="dark:invert"
-          />
-        </a>
       </nav>
     </header>
   );
