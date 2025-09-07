@@ -58,7 +58,7 @@ export default function Register() {
     
     setIsLoading(true);
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch('register/api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -71,6 +71,7 @@ export default function Register() {
         setErrors({ submit: data.message });
       }
     } catch (error) {
+      console.log(error);
       setErrors({ submit: 'An error occurred. Please try again.' });
     } finally {
       setIsLoading(false);
