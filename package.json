@@ -16,12 +16,16 @@
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {
-    "@prisma/client": "^6.14.0",
+    "@prisma/client": "^6.16.1",
     "@types/debounce": "^1.2.4",
+    "@typescript-eslint/parser": "^8.43.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
+    "jose": "^6.1.0",
+    "jsonwebtoken": "^9.0.2",
     "next": "15.5.0",
-    "prisma": "^6.14.0",
+    "prettier": "^3.6.2",
+    "prettier-eslint": "^16.4.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "use-debounce": "^10.0.6"
@@ -35,9 +39,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
+    "eslint": "^9.35.0",
     "eslint-config-next": "15.5.0",
+    "prisma": "^6.16.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.9.2"
   }
 }

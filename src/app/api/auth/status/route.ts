@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const isAuthenticated = !!sessionToken; // Simple check
     
     return NextResponse.json({ isAuthenticated });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { isAuthenticated: false, error: 'Failed to check authentication status' },
       { status: 500 }

@@ -15,7 +15,7 @@ export async function POST() {
     // await signOut({ redirect: false });
     
     return response;
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to logout' },
       { status: 500 }
