@@ -69,12 +69,12 @@ export default function Header() {
       <div>
         <Link href="/">
           <Image 
-            src="/wave.svg" 
+            src="/wave.png" 
             alt="Next.js logo" 
             width={100} 
             height={25} 
             priority 
-            className="dark:invert hover:opacity-80 transition-opacity"
+            className=" hover:opacity-80 transition-opacity"
           />
         </Link>
       </div>
@@ -92,6 +92,19 @@ export default function Header() {
           className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
         >
           About us
+        </Link>
+
+        <Link
+          href="/register-product/"
+          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+        >
+          Register product
+        </Link>
+        <Link
+          href="/create-category/"
+          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+        >
+          Create category
         </Link>
 
         {isLoggedIn ? (

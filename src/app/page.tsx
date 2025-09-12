@@ -1,8 +1,9 @@
-// app/page.tsx (Server Component)
-import Header from "@/components/Header";
-import Filter from "@/components/FilterBar"; 
+// app/page.tsx 
 import { Card } from "@/components/Cards";
 import { products } from "@/data/products";
+import Header from "@/components/Header";
+import Filter from "@/components/FilterBar"; 
+import SearchBar from "@/components/SearchBar";
 
 interface HomePageProps {
   searchParams: {
@@ -16,9 +17,9 @@ export default function Home({ searchParams }: HomePageProps) {
   const category = searchParams.category || 'none';
 
   const itensFilter = products.filter(item => {
-    const correspondeCategory = category === 'none' || item.category === category;
-    const correspondeBusca = item.name.toLowerCase().includes(search.toLowerCase());
-    return correspondeCategory && correspondeBusca;
+    const equalsCategory = category === 'none' || item.category === category;
+    const equalsSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    return equalsCategory && equalsSearch;
   });
 
   return (
@@ -29,6 +30,9 @@ export default function Home({ searchParams }: HomePageProps) {
         <div className="md:order-2">
           {/* Now passing the correct props */}
           <Filter category={category} search={search} /> 
+        </div>
+         <div className="md:order-1 w-full md:w-auto">
+          <SearchBar search={search} category={category} />
         </div>
       </div>
 

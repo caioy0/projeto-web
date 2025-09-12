@@ -3,6 +3,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import RegisterProducts from '@/components/RegisterProducts';
+//import PostPage from '@/components/RegProdServer'
 
 export default function RegisterProductPage() {
   return (

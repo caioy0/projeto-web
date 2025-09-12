@@ -3,14 +3,14 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
+import { useState } from 'react';
 
 type Props = {
   search: string;
-  setSearch: (value: string) => void;
   category: string;
 };
 
-export default function SearchBar({ search, setSearch, category }: Props) {
+export default function SearchBar({ search, category }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -34,20 +34,19 @@ export default function SearchBar({ search, setSearch, category }: Props) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setSearch(value);
     handleSearch(value);
   };
 
   return (
     <div>
       <label htmlFor="busca" className="sr-only">
-        Buscar
+        Search
       </label>
       <input
         type="text"
-        id="busca"
-        name="busca"
-        placeholder="Buscar..."
+        id="search"
+        name="search"
+        placeholder="Search..."
         className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={search}
         onChange={handleChange}
