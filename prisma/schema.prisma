@@ -12,8 +12,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_URL")
-  directUrl = env("LOCAL_URL")
+  url       = env("LOCAL_URL")
+  // directUrl = env("LOCAL_URL")
 }
 
 // Models:
@@ -22,6 +22,7 @@ model User {
   name      String
   email     String   @unique
   password  String
+  active    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -30,6 +31,7 @@ model Product {
   id          String   @id @default(cuid())
   name        String
   description String
+  // slug        String    @unique
   price       Decimal
   sale        Boolean  @default(false)
   salePrice   Decimal?

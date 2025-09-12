@@ -26,6 +26,7 @@ export async function createProduct(formData: FormData) {
       data: {
         name,
         description,
+        // slug,
         price,
         sale,
         salePrice,
@@ -46,7 +47,7 @@ export interface CreateCategoryData {
   name: string;
 }
 
-// Create category @/app/create-category
+// @/app/create-category => Create a category for products
 export async function createCategory(formData: FormData): Promise<void> {
   const name = formData.get("name") as string;
   if (!name) throw new Error("Category name is required");
