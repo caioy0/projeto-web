@@ -68,3 +68,13 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// GET -> list usua
+export async function GET() {
+	try {
+		const users = await prisma.user.findMany();
+		return NextResponse.json(users, { status: 200 });
+	} catch (error) {
+		return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
+	}
+}
