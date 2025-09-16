@@ -51,7 +51,7 @@ export async function PUT(
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (error) {
     console.error("PUT /api/products/[id] error:", error);
-    return NextResponse.json({ error: "Erro ao atualizar produto" }, { status: 500 });
+    return NextResponse.json({ error: "Error updating the product" }, { status: 500 });
   }
 }
 
@@ -67,9 +67,9 @@ export async function DELETE(
       where: { id },
     });
 
-    return NextResponse.json({ message: "Produto deletado com sucesso" }, { status: 200 });
+    return NextResponse.json({ message: "Success! product deleated" }, { status: 200 });
   } catch (error) {
     console.error("DELETE /api/products/[id] error:", error);
-    return NextResponse.json({ error: "Erro ao deletar produto" }, { status: 500 });
+    return NextResponse.json({ error: "Error del product" }, { status: 500 });
   }
 }

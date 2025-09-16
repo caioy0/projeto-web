@@ -3,7 +3,6 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
-import { useState } from 'react';
 
 type Props = {
   search: string;

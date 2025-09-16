@@ -15,7 +15,7 @@ export async function GET() {
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error("GET /product/api error:", error);
-    return NextResponse.json({ error: "Erro ao buscar produtos" }, { status: 500 });
+    return NextResponse.json({ error: "Error searching products" }, { status: 500 });
   }
 }
 
@@ -39,6 +39,6 @@ export async function POST(req: Request) {
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
     console.error("POST /product/api error:", error);
-    return NextResponse.json({ error: "Erro ao criar produto" }, { status: 500 });
+    return NextResponse.json({ error: "Error creating a new product" }, { status: 500 });
   }
 }
