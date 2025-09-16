@@ -1,4 +1,5 @@
-import CreateCategory from "@/components/CreateCategory";
+// @/app/create-category/page.tsx
+import CreateCategory from "@/components/Product/CreateCategory";
 import Header from "@/components/Header";
 
 export default async function RegisterCategoryPage() {

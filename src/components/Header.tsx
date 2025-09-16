@@ -95,16 +95,10 @@ export default function Header() {
         </Link>
 
         <Link
-          href="/register-product/"
+          href="/product/"
           className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
         >
-          Register product
-        </Link>
-        <Link
-          href="/create-category/"
-          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
-        >
-          Create category
+          Product Page
         </Link>
 
         {isLoggedIn ? (

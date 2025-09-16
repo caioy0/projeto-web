@@ -1,14 +1,17 @@
 {
-    "Questão 1": "Qual o nome da loja virtual e quais produtos ou serviços serão vendidos?",
+    "Questão 1": {
+        "Qual o nome da loja virtual e quais produtos ou serviços serão vendidos?": 
+            "Cloud gaming"
+    },
     "Questão 2": {
         "API de Produto": [
-            "POST - gravar produto",
-            "PUT - Alterar produto",
-            "DELETE - remover produto",
-            "GET - trazer por codigo um produto",
-            "GET Listar - trazer lista de todos os produtos",
-            "GET Vitrine - trazer lista de produtos em destaque na vitrine",
-            "GET Busca - trazer lista de produtos filtrando por um termo de busca"
+            "POST - gravar produto - ok",
+            "PUT - Alterar produto - ok",
+            "DELETE - remover produto - ok",
+            "GET - trazer por codigo um produto - ok",
+            "GET Listar - trazer lista de todos os produtos - ok",
+            "GET Vitrine - trazer lista de produtos em destaque na vitrine - ok ",
+            "GET Busca - trazer lista de produtos filtrando por um termo de busca - ok"
         ]
     },
     "Questão 3": {
