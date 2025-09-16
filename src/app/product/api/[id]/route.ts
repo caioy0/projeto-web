@@ -3,36 +3,36 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// GET /api/products/:id → busca produto por ID
+// GET /api/product/:id : Search prod by ID (string)
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     const product = await prisma.product.findUnique({
       where: { id },
     });
 
     if (!product) {
-      return NextResponse.json({ error: "Produto não encontrado" }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json(product, { status: 200 });
   } catch (error) {
-    console.error("GET /api/products/[id] error:", error);
-    return NextResponse.json({ error: "Erro ao buscar produto" }, { status: 500 });
+    console.error("GET /api/product/[id] error:", error);
+    return NextResponse.json({ error: "Error searching product" }, { status: 500 });
   }
 }
 
 // PUT /api/products/:id → atualiza produto
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const body = await req.json();
 
     const updatedProduct = await prisma.product.update({
@@ -58,10 +58,10 @@ export async function PUT(
 // DELETE /api/products/:id → exclui produto
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     await prisma.product.delete({
       where: { id },

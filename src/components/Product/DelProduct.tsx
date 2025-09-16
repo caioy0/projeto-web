@@ -1,9 +1,14 @@
 // @/components/CreateProduct/DelProducts.tsx
+import { deleteProduct} from "@/actions/product";
 
 export default function DelProduct(){
     return (
-        <h1>
-            in prod
-        </h1>
+        <main className="">
+            <div className="">
+                <h1>
+                    in prod
+                </h1>
+            </div>
+        </main>
     );
 }

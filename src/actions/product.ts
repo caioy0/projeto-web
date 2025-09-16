@@ -1,12 +1,10 @@
 // src/app/product.ts
-
 'use server';
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import slugify from "slugify";
-
 
 // @/app/create-category => Create a category for products
 export async function createCategory(formData: FormData): Promise<void> {
