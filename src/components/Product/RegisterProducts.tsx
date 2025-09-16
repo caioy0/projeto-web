@@ -1,13 +1,64 @@
 // @/components/CreateProduct/RegisterProducts.tsx
-import { createProduct } from "@/actions/actions";
-import prisma from "@/lib/prisma";
+
+"use client";
+
+import { useState } from "react";
 import CategorySelect from "./SelectCategory";
 
-export default async function RegisterProductsPage() {
-  // Fetch categories on the server
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
+type Category = {
+  id: string;
+  name: string;
+};
+
+export default function RegisterProductsPage({ categories }: { categories: Category[] }) {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    const formData = new FormData(event.currentTarget);
+
+    const productData = {
+      name: formData.get("name"),
+      description: formData.get("description"),
+      price: parseFloat(formData.get("price") as string),
+      quantity: parseInt(formData.get("quantity") as string, 10),
+      categoryId: formData.get("categoryId"),
+      sale: formData.get("sale") === "on",
+      salePrice: formData.get("salePrice")
+        ? parseFloat(formData.get("salePrice") as string)
+        : null,
+    };
+
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao criar produto");
+      }
+
+    const data = await res.json();
+    setMessage(`Produto criado com sucesso: ${data.name}`);
+    event.currentTarget.reset(); // limpa formulário
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("Erro inesperado");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -16,14 +67,11 @@ export default async function RegisterProductsPage() {
           Register New Product
         </h1>
 
-        <form action={createProduct} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Product Name */}
             <div className="md:col-span-2">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Product Name *
               </label>
               <input
@@ -39,10 +87,7 @@ export default async function RegisterProductsPage() {
 
             {/* Description */}
             <div className="md:col-span-2">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description *
               </label>
               <textarea
@@ -58,11 +103,8 @@ export default async function RegisterProductsPage() {
 
             {/* Price */}
             <div>
-              <label
-                htmlFor="price"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Price (RS) *
+              <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Price (R$) *
               </label>
               <input
                 type="number"
@@ -79,10 +121,7 @@ export default async function RegisterProductsPage() {
 
             {/* Quantity */}
             <div>
-              <label
-                htmlFor="quantity"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Quantity *
               </label>
               <input
@@ -108,21 +147,15 @@ export default async function RegisterProductsPage() {
                 name="sale"
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label
-                htmlFor="sale"
-                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-              >
+              <label htmlFor="sale" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                 On Sale
               </label>
             </div>
 
             {/* Sale Price */}
             <div>
-              <label
-                htmlFor="salePrice"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Sale Price (RS)
+              <label htmlFor="salePrice" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Sale Price (R$)
               </label>
               <input
                 type="number"
@@ -149,12 +182,17 @@ export default async function RegisterProductsPage() {
             </button>
             <button
               type="submit"
+              disabled={loading}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md 
-                         hover:bg-blue-700"
+                         hover:bg-blue-700 disabled:opacity-50"
             >
-              Create Product
+              {loading ? "Creating..." : "Create Product"}
             </button>
           </div>
+
+          {message && (
+            <p className="mt-4 text-sm text-gray-700 dark:text-gray-300">{message}</p>
+          )}
         </form>
       </div>
     </main>

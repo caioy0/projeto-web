@@ -1,3 +1,5 @@
+// @/components/CreateProduct/DelProducts.tsx
+
 export default function DelProduct(){
     return (
         <h1>

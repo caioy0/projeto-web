@@ -3,66 +3,6 @@
 
 // import { cookies } from 'next/headers'; // To set the auth token in a cookie
 // import { registerUser, loginUser } from '@/lib/auth';
-import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
-import slugify from "slugify";
-
-// Create products in @app/register-product
-export async function createProduct(formData: FormData) {
-  try {
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const price = parseFloat(formData.get("price") as string);
-    const sale = formData.get("sale") === "on"; // checkbox
-    const salePrice = sale
-      ? formData.get("salePrice")
-        ? parseFloat(formData.get("salePrice") as string)
-        : null
-      : null;
-    const quantity = parseInt(formData.get("quantity") as string);
-    const categoryId = formData.get("categoryId") as string;
-
-    await prisma.product.create({
-      data: {
-        name,
-        description,
-        // slug,
-        price,
-        sale,
-        salePrice,
-        quantity,
-        categoryId,
-      },
-    });
-
-    // Redirect to homepage after successful creation
-    redirect("/");
-  } catch (error) {
-    console.error("Error creating product:", error);
-    throw new Error("Failed to create product");
-  }
-}
-
-export interface CreateCategoryData {
-  name: string;
-}
-
-// @/app/create-category => Create a category for products
-export async function createCategory(formData: FormData): Promise<void> {
-  const name = formData.get("name") as string;
-  if (!name) throw new Error("Category name is required");
-
-  await prisma.category.create({
-    data: {
-      name,
-      slug: slugify(name),
-    },
-  });
-
-  // Optionally redirect after creation
-  redirect("/"); 
-}
-
 
 // Helper function to set the JWT token as a cookie
 // async function setAuthToken(token: string) {

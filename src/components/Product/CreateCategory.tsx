@@ -1,5 +1,5 @@
 // @/components/CreateCategory/CreateCategory.tsx
-import { createCategory } from "@/actions/actions";
+import { createCategory } from "@/actions/product";
 
 export default function CreateCategoryPage() {
   return (
@@ -8,7 +8,7 @@ export default function CreateCategoryPage() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
           Register New Category
         </h1>
-        <form action={createCategory} method="post" className="flex gap-2">
+        <form action={createCategory} className="flex gap-2">
           <input
             type="text"
             name="name"

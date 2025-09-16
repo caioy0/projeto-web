@@ -2,12 +2,12 @@
     "Questão 1": "Qual o nome da loja virtual e quais produtos ou serviços serão vendidos?",
     "Questão 2": {
         "API de Produto": [
-            "POST - gravar produto",
+            "POST - gravar produto - OK",
             "PUT - Alterar produto",
             "DELETE - remover produto",
             "GET - trazer por codigo um produto",
-            "GET Listar - trazer lista de todos os produtos",
-            "GET Vitrine - trazer lista de produtos em destaque na vitrine",
+            "GET Listar - trazer lista de todos os produtos - ok",
+            "GET Vitrine - trazer lista de produtos em destaque na vitrine ",
             "GET Busca - trazer lista de produtos filtrando por um termo de busca"
         ]
     },
