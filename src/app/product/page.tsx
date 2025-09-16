@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Header from "@/components/Header";
+import GetProduct from "@/components/Product/GetProduct";
 
 export default function ProductsPage() {
   return (
@@ -12,6 +13,10 @@ export default function ProductsPage() {
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           Products Dashboard
         </h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          Lista de Produtos
+        </h1>
+        <GetProduct />
 
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           <Link href="/product/create-product">
