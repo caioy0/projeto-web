@@ -1,4 +1,4 @@
-export default async function OrdersPage() {
+export default async function CheckoutPage() {
     
     return(
         <div>
