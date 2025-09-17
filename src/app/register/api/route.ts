@@ -1,6 +1,6 @@
-// src/app/api/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs'; // Using bcryptjs instead of bcrypt for better compatibility
+import prisma from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already exists
+    // valida usuario na base
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -57,21 +57,24 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
     return NextResponse.json(
-      { 
-        message: 'User created successfully',
-        user: userWithoutPassword
-      },
+      { message: 'Usuário criado com sucesso!', user: { id: user.id, name: user.name, email: user.email } },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Registration error:', error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { error: 'Erro interno do servidor.' },
       { status: 500 }
     );
   }
+}
+
+// GET -> list usua
+export async function GET() {
+	try {
+		const users = await prisma.user.findMany();
+		return NextResponse.json(users, { status: 200 });
+	} catch (error) {
+		return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
+	}
 }
