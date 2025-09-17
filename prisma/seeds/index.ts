@@ -16,7 +16,7 @@ async function main() {
       name: 'Admin User',
       email: 'admin@example.com',
       password: hashedPassword,
-      role: 'ADMIN',
+      // role: 'ADMIN',
     },
   });
   console.log('Admin user created:', admin);
@@ -30,7 +30,7 @@ async function main() {
       name: 'Regular User',
       email: 'user@example.com',
       password: userPassword,
-      role: 'USER',
+      // role: 'USER',
     },
   });
   console.log('Regular user created:', user);
