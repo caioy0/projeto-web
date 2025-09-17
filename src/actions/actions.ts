@@ -3,6 +3,30 @@
 
 // import { cookies } from 'next/headers'; // To set the auth token in a cookie
 // import { registerUser, loginUser } from '@/lib/auth';
+import prisma from '@/lib/prisma'
+
+// Searchbar ssr to csr
+export async function getProducts(search?: string, category?: string) {
+  const products = await prisma.product.findMany({
+    where: {
+      AND: [
+        search
+          ? {
+              name: {
+                contains: search,
+                mode: 'insensitive', // não diferencia maiúsculas/minúsculas
+              },
+            }
+          : {},
+        category && category !== 'none'
+          ? { categoryId: category }
+          : {},
+      ],
+    },
+  })
+
+  return products
+}
 
 // Helper function to set the JWT token as a cookie
 // async function setAuthToken(token: string) {
