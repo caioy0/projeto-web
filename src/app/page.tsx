@@ -6,13 +6,14 @@ import Filter from "@/components/FilterBar";
 import SearchBar from "@/components/SearchBar";
 
 interface HomePageProps {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     category?: string;
-  };
+  }>;
 }
 
-export default function Home({ searchParams }: HomePageProps) {
+export default async function Home(props: HomePageProps) {
+  const searchParams = await props.searchParams;
   const search = searchParams.search || '';
   const category = searchParams.category || 'none';
 
