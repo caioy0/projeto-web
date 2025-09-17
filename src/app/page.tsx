@@ -1,6 +1,6 @@
 // app/page.tsx 
-import { Card } from "@/components/Cards";
 import { products } from "@/data/products";
+import ProductsList from "@/components/Product/ProductList";
 import Header from "@/components/Header";
 import Filter from "@/components/FilterBar"; 
 import SearchBar from "@/components/SearchBar";
@@ -28,27 +28,15 @@ export default function Home({ searchParams }: HomePageProps) {
       
       <div className="mt-8 mb-8 flex flex-wrap flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-6">
         <div className="md:order-2">
-          {/* Now passing the correct props */}
           <Filter category={category} search={search} /> 
         </div>
-         <div className="md:order-1 w-full md:w-auto">
+        <div className="md:order-1 w-full md:w-auto">
           <SearchBar search={search} category={category} />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {itensFilter.map(item => (
-          <Card
-            key={item.id} 
-            id={item.id} 
-            name={item.name}
-            price={item.price}
-            image={item.image}
-            category={item.category}
-            description={item.description}
-          />
-        ))}
-      </div>
+      {/* Server component já filtrando e passando para Card */}
+      <ProductsList search={search} category={category} />
     </main>
   );
 }
