@@ -23,6 +23,7 @@
   "dependencies": {
     "@prisma/client": "^6.16.1",
     "@prisma/extension-accelerate": "^2.0.2",
+    "@react-email/render": "^1.2.3",
     "@types/debounce": "^1.2.4",
     "@typescript-eslint/parser": "^8.43.0",
     "bcrypt": "^6.0.0",
