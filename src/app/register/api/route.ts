@@ -1,12 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs'; // Using bcryptjs instead of bcrypt for better compatibility
 import prisma from '@/lib/prisma';
+import { Resend } from 'resend';
 
 export async function POST(request: NextRequest) {
   try {
     const { PrismaClient } = await import('@prisma/client');
     const prisma = new PrismaClient();
     const { name, email, password } = await request.json();
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const accessLink = 'http://localhost:3000'
+    const htmlContent = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
+    <h1>Olá, ${name}! 👋</h1>
+    <p>Obrigado por criar sua conta na <strong>CloudGames</strong>. Ative sua conta clicando abaixo:</p>
+    <a href="${accessLink}" style="display:inline-block;padding:12px 20px;background-color:#0f62fe;color:#fff;border-radius:6px;text-decoration:none;font-weight:bold;margin-top:12px;">
+      Ativar minha conta
+    </a>
+    <p style="font-size: 14px; margin-top: 20px; color: #6b7280;">
+      Se o botão acima não funcionar, copie e cole este link no seu navegador:
+    </p>
+    <p style="font-size: 13px; color: #0f62fe; word-break: break-word;">
+      ${accessLink}
+    </p>    
+    <p style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
+      Este link expira em 1 hora por motivos de segurança.
+    </p>
+  </div>
+`;
 
     // Validate input
     if (!name || !email || !password) {
@@ -48,6 +69,13 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    await resend.emails.send({
+      from: 'cloudgames <onboarding@resend.dev>',
+      to: [email],
+      subject: 'Primeiro acesso',
+      html: htmlContent
+    });
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -71,10 +99,10 @@ export async function POST(request: NextRequest) {
 
 // GET -> list usua
 export async function GET() {
-	try {
-		const users = await prisma.user.findMany();
-		return NextResponse.json(users, { status: 200 });
-	} catch (error) {
-		return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
-	}
+  try {
+    const users = await prisma.user.findMany();
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
+  }
 }
