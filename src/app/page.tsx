@@ -1,5 +1,4 @@
 // app/page.tsx 
-import { products } from "@/data/products";
 import ProductsList from "@/components/Product/ProductList";
 import Header from "@/components/Header";
 import Filter from "@/components/FilterBar"; 
@@ -16,12 +15,6 @@ export default async function Home(props: HomePageProps) {
   const searchParams = await props.searchParams;
   const search = searchParams.search || '';
   const category = searchParams.category || 'none';
-
-  const itensFilter = products.filter(item => {
-    const equalsCategory = category === 'none' || item.category === category;
-    const equalsSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    return equalsCategory && equalsSearch;
-  });
 
   return (
     <main className="p-6">
