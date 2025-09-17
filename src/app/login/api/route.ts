@@ -145,10 +145,8 @@ export async function DELETE(request: NextRequest) {
 
 		return NextResponse.json({ message: 'Usuário deletado com sucesso.' }, { status: 200 });
 
-	} catch (error: any) {
-		console.error(error);
-
-		if (error.code === 'P2025') {
+	} catch (error) {
+		if (error === 'P2025') {
 			return NextResponse.json({ error: 'Usuário não encontrado.' }, { status: 404 });
 		}
 

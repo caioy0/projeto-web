@@ -1,4 +1,5 @@
-// src/app/register/page.tsx
+"use client"
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import AuthCard from '@/components/Auth/AuthCard';
@@ -6,7 +7,7 @@ import InputField from '@/components/Auth/InputField';
 import PasswordStrength from '@/components/Auth/PasswordStrength';
 import { UserValidator } from '@/lib/validations/users';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
   const [formData, setFormData] = useState({
