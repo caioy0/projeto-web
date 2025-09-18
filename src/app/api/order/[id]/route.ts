@@ -1,16 +1,14 @@
 // src/app/api/order/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY!);
+import nodemailer from "nodemailer";
 
 type OrderItemInput = {
   productId: string;
   quantity: number;
 };
 
-// Func to send mail when order
+// Função para enviar email quando o pedido for confirmado
 async function sendOrderEmail(to: string, name: string, orderId: string) {
   const orderLink = `http://localhost:3000/order/${orderId}`;
   const html = `
@@ -29,8 +27,20 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
     </div>
   `;
 
-  await resend.emails.send({
-    from: "no-reply@cloudgames.com",
+  // Configuração do Nodemailer
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST, // Ex: smtp.gmail.com
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: false, // true se usar 465
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  // Envia o email
+  await transporter.sendMail({
+    from: `"CloudGames" <${process.env.SMTP_USER}>`,
     to,
     subject: "Confirmação do seu pedido",
     html,
@@ -41,14 +51,13 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
 export async function POST(req: Request) {
   try {
     const body: { userId: string; items: OrderItemInput[] } = await req.json();
-
     const { userId, items } = body;
 
     if (!userId || !items || items.length === 0) {
       return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
     }
 
-    // Search prod and calculate
+    // Buscar produtos e calcular total
     const products = await prisma.product.findMany({
       where: { id: { in: items.map((i) => i.productId) } },
     });
@@ -56,12 +65,13 @@ export async function POST(req: Request) {
     let total = 0;
     const orderItems = items.map((i) => {
       const product = products.find((p) => p.id === i.productId);
-    // errors
-      if (!product) 
-        throw new Error(`Product: ${i.productId} not found!`);
-      
-      const price = product.sale && product.salePrice ? product.salePrice : product.price;
+
+      if (!product) throw new Error(`Produto: ${i.productId} não encontrado!`);
+
+      const price =
+        product.sale && product.salePrice ? product.salePrice : product.price;
       total += Number(price) * i.quantity;
+
       return {
         productId: i.productId,
         quantity: i.quantity,
@@ -69,7 +79,7 @@ export async function POST(req: Request) {
       };
     });
 
-    // Create order
+    // Criar pedido
     const order = await prisma.order.create({
       data: {
         userId,
@@ -81,7 +91,7 @@ export async function POST(req: Request) {
       include: { items: true, user: true },
     });
 
-    // Send mail call
+    // Enviar email de confirmação
     await sendOrderEmail(order.user.email, order.user.name, order.id);
 
     return NextResponse.json(order, { status: 201 });

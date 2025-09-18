@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import Prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verifica se o token existe e ainda é válido
-    const user = await prisma.user.findFirst({
+    const user = await Prisma.user.findFirst({
       where: { 
         activationToken: token
       }
@@ -64,7 +62,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Busca o usuário pelo token
-    const user = await prisma.user.findFirst({
+    const user = await Prisma.user.findFirst({
       where: { activationToken: token }
     });
 
@@ -79,7 +77,7 @@ export async function PUT(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Atualiza a senha e limpa o token
-    await prisma.user.update({
+    await Prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,

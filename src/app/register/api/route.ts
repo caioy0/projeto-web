@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
-import { Resend } from 'resend';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 export async function POST(request: NextRequest) {
   try {
-    const { PrismaClient } = await import('@prisma/client');
-    const prisma = new PrismaClient();
     const { name, email, password } = await request.json();
-    const resend = new Resend(process.env.RESEND_API_KEY);
     const activationToken = crypto.randomBytes(32).toString('hex');
-    const accessLink = `http://localhost:3000/active?token=${activationToken}`
+    const accessLink = `http://localhost:3000/active?token=${activationToken}`;
     const htmlContent = `
   <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
     <h1>Olá, ${name}! 👋</h1>
@@ -71,11 +68,23 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await resend.emails.send({
-      from: 'cloudgames <onboarding@resend.dev>',
-      to: [email],
+    // Configura transporte do Nodemailer
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST, // ex: smtp.gmail.com
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: false, // true para 465, false para outros
+      auth: {
+        user: process.env.SMTP_USER, // seu email
+        pass: process.env.SMTP_PASS, // sua senha ou App Password
+      },
+    });
+
+    // Enviar e-mail
+    await transporter.sendMail({
+      from: `"CloudGames" <${process.env.SMTP_USER}>`,
+      to: email,
       subject: 'Primeiro acesso',
-      html: htmlContent
+      html: htmlContent,
     });
 
     // Create user
@@ -85,11 +94,14 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         activationToken,
-      } ,
+      },
     });
 
     return NextResponse.json(
-      { message: 'Usuário criado com sucesso!', user: { id: user.id, name: user.name, email: user.email } },
+      {
+        message: 'Usuário criado com sucesso!',
+        user: { id: user.id, name: user.name, email: user.email },
+      },
       { status: 201 }
     );
   } catch (error) {
@@ -101,13 +113,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET -> list usua
+// GET -> listar usuários
 export async function GET() {
   try {
     const users = await prisma.user.findMany();
     return NextResponse.json(users, { status: 200 });
   } catch (error) {
-    console.error('POST /register/api error:', error);
+    console.error('GET /register/api error:', error);
     return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
   }
 }

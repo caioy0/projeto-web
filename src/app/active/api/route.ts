@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import Prisma from '@/lib/prisma';
 
 export async function PATCH(request: NextRequest) {
     try {
@@ -15,7 +13,7 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
-        const user = await prisma.user.findFirst({
+        const user = await Prisma.user.findFirst({
             where: { activationToken: token }
         });
 
@@ -26,7 +24,7 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
-        await prisma.user.update({
+        await Prisma.user.update({
             where: { id: user.id },
             data: { 
                 active: true,

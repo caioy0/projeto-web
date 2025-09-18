@@ -1,14 +1,13 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-import crypto from 'crypto';
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const activationToken = crypto.randomBytes(32).toString('hex');
-    const resetLink = `http://localhost:3000/reset-password?token=${activationToken}`
+    const activationToken = crypto.randomBytes(32).toString("hex");
+    const resetLink = `http://localhost:3000/reset-password?token=${activationToken}`;
 
     const htmlContent = `
   <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: auto; padding: 20px;">
@@ -56,10 +55,11 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!email) {
       return NextResponse.json(
-        { message: 'email é necessario'},
+        { message: "email é necessário" },
         { status: 400 }
       );
     }
+
     // valida usuario na base
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -67,32 +67,46 @@ export async function POST(request: NextRequest) {
 
     if (!existingUser) {
       return NextResponse.json(
-        { message: 'email não encontrado na nossa base' },
+        { message: "email não encontrado na nossa base" },
         { status: 409 }
       );
     }
 
+    // Atualiza token de redefinição
     await prisma.user.update({
       where: { email },
       data: {
         activationToken: activationToken,
-      }
+      },
     });
 
-    await resend.emails.send({
-      from: 'cloudgames <onboarding@resend.dev>',
-      to: [email],
-      subject: 'Redefinição de senha',
-      html: htmlContent
+    // Configura transporte do Nodemailer
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST, // Ex: smtp.gmail.com
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: false, // true se porta 465
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    // Envia email
+    await transporter.sendMail({
+      from: `"CloudGames" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Redefinição de senha",
+      html: htmlContent,
     });
 
     return NextResponse.json(
-      { message: 'Email para reset senha enviado!', user: { email } },
+      { message: "Email para reset senha enviado!", user: { email } },
       { status: 201 }
     );
   } catch (err) {
+    console.error("Erro POST /reset-password:", err);
     return NextResponse.json(
-      { error: 'Erro interno do servidor.' },
+      { error: "Erro interno do servidor." },
       { status: 500 }
     );
   }
