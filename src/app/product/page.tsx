@@ -1,40 +1,40 @@
 // @/app/product/create-product/page.tsx
-
 import Link from "next/link";
 import Header from "@/components/Header";
-import GetProduct from "@/components/Product/GetProduct";
 
 export default function ProductsPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-white">
       <Header />
 
-      <div className="max-w-4xl mx-auto px-4 py-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">
-          Products Dashboard
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-10">
+          Dashboard de Produtos
         </h1>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          Lista de Produtos
-        </h1>
-        <GetProduct />
 
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2">
           <Link href="/product/create-product">
-            <button className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white font-medium shadow hover:bg-blue-700 transition">
-              Go to Create Product
-            </button>
+            <div className="cursor-pointer rounded-xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm hover:shadow-md transition">
+              <span className="block text-lg font-medium text-gray-900">
+                Criar Produto
+              </span>
+            </div>
           </Link>
 
           <Link href="/product/create-category">
-            <button className="w-full rounded-lg bg-green-600 px-4 py-2 text-white font-medium shadow hover:bg-green-700 transition">
-              Go to Create Category
-            </button>
+            <div className="cursor-pointer rounded-xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm hover:shadow-md transition">
+              <span className="block text-lg font-medium text-gray-900">
+                Criar Categoria
+              </span>
+            </div>
           </Link>
 
           <Link href="/product/alt-product">
-            <button className="w-full rounded-lg bg-purple-600 px-4 py-2 text-white font-medium shadow hover:bg-purple-700 transition">
-              Go to Alt Product
-            </button>
+            <div className="cursor-pointer rounded-xl border border-gray-200 bg-gray-50 p-6 text-center shadow-sm hover:shadow-md transition">
+              <span className="block text-lg font-medium text-gray-900">
+                Alterar Produto
+              </span>
+            </div>
           </Link>
         </div>
       </div>

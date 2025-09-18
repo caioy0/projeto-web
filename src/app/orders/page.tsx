@@ -1,10 +1,14 @@
+// @/app/orders/page.tsx
+import Header from "@/components/Header";
+import Orders from "@/components/Orders/Orders";
 export default async function Checkout() {
     
     return(
-        <div>
-            <h1>
-                Yo
-            </h1>
-        </div>
+        <main>
+            <Header/>
+            <div>
+                <Orders></Orders>
+            </div>
+        </main>
     );
 }

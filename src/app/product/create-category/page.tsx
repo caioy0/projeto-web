@@ -5,7 +5,9 @@ import Header from "@/components/Header";
 export default async function RegisterCategoryPage() {
     return(
         <main>
-            <Header/>
+            <div>
+                <Header/>
+            </div>
             <CreateCategory/>
         </main>
     );

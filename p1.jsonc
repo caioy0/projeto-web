@@ -16,13 +16,13 @@
     },
     "Questão 3": {
         "API de Cliente": [
-            "POST - gravar cliente e enviar email para confirmação",
-            "PUT - Alterar cliente",
-            "DELETE - remover cliente",
-            "GET - trazer por codigo um cliente",
+            "POST - gravar cliente e enviar email para confirmação - ok",
+            "PUT - Alterar cliente - ok",
+            "DELETE - remover cliente - ok",
+            "GET - trazer por codigo um cliente - ok",
             "GET Listar - trazer lista de todos os cliente",
-            "POST FazerLogin - enviando email e senha fazer login carregando o objeto Cliente",
-            "PATCH - Ativar um Cliente, atraves do link do email de confirmação mudar ativo=1",
+            "POST FazerLogin - enviando email e senha fazer login carregando o objeto Cliente - ok",
+            "PATCH - Ativar um Cliente, atraves do link do email de confirmação mudar ativo=1 - ok",
             "GET Redefinição de Senha - mandar email com link para redefinir senha"
         ]
     },

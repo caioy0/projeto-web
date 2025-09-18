@@ -100,6 +100,12 @@ export default function Header() {
         >
           Product Page
         </Link>
+        <Link
+          href="/orders/"
+          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+        >
+          Orders
+        </Link>
 
         {isLoggedIn ? (
           // Show these when user is logged in
