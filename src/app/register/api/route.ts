@@ -89,7 +89,8 @@ export async function POST(request: NextRequest) {
       { message: 'Usuário criado com sucesso!', user: { id: user.id, name: user.name, email: user.email } },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('POST /register/api error:', error);
     return NextResponse.json(
       { error: 'Erro interno do servidor.' },
       { status: 500 }
@@ -102,7 +103,7 @@ export async function GET() {
   try {
     const users = await prisma.user.findMany();
     return NextResponse.json(users, { status: 200 });
-  } catch (error) {
+  } catch  {
     return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
   }
 }
