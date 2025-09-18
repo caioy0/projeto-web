@@ -1,100 +1,148 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import AuthCard from '@/components/Auth/AuthCard';
+import InputField from '@/components/Auth/InputField';
+import PasswordStrength from '@/components/Auth/PasswordStrength';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function ResetPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+export default function ResetPassword() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const token = searchParams.get('token');
 
-  // Validação simples de email
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const [formData, setFormData] = useState({
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [tokenValid, setTokenValid] = useState<boolean | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    setError("");
-    setSuccess("");
-  };
+    // Validar token ao carregar a página
+    useEffect(() => {
+        if (!token) {
+            setTokenValid(false);
+            return;
+        }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isEmailValid) {
-      setError("Insira um email válido.");
-      return;
-    }
+        fetch(`/reset-password/api?token=${token}`)
+            .then(res => res.json())
+            .then(data => setTokenValid(data.valid))
+            .catch(() => setTokenValid(false));
+    }, [token]);
 
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    };
 
-    try {
-      const res = await fetch("/reset-password/api", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
 
-      if (res.ok) {
-        setSuccess("Link de redefinição de senha enviado com sucesso!");
-        setEmail("");
-      } else {
-        setError(data.error || "Erro ao enviar link de redefinição.");
-      }
-    } catch (err) {
-      setError("Erro de conexão. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        if (!formData.newPassword) newErrors.newPassword = 'Senha é necessaria';
+        if (formData.newPassword !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'Senhas não batem';
+        }
+        if (formData.newPassword.length < 8) {
+            newErrors.newPassword = 'Senha deve ter no minimo 8 digitos';
+        }
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <h1 className="text-2xl font-bold mb-4">Redefinir Senha</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-full max-w-sm space-y-4"
-      >
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
-            {success}
-          </div>
-        )}
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
-        <div>
-          <label htmlFor="email" className="block mb-1">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={handleChange}
-            required
-            placeholder="seuemail@exemplo.com"
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+        if (!token) return;
+
+        setIsLoading(true);
+        setSuccessMessage('');
+        try {
+            const response = await fetch('/reset-password/api', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, token }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setSuccessMessage('Senha alterada com sucesso! Redirecionando para a tela de login...');
+                setTimeout(() => router.push('/login'), 2000);
+            } else {
+                setErrors({ submit: data.message || 'Falha na alteração de senha' });
+            }
+        } catch {
+            setErrors({ submit: 'Um erro ocorreu. Tente novamente' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // validação token
+    if (tokenValid === null) return <div className="p-8 text-center">Validando Token...</div>;
+    if (!tokenValid) return <div className="p-8 text-center text-red-600">Token invalido ou expirado</div>;
+
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Header />
+            <main className="container mx-auto px-4 py-8">
+                <AuthCard title="Reset Your Password">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {errors.submit && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                {errors.submit}
+                            </div>
+                        )}
+                        {successMessage && (
+                            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                                {successMessage}
+                            </div>
+                        )}
+
+                        <InputField
+                            label="Nova senha"
+                            name="newPassword"
+                            type="password"
+                            value={formData.newPassword}
+                            error={errors.newPassword}
+                            onChange={handleChange}
+                            required
+                        />
+                        <PasswordStrength password={formData.newPassword} />
+
+                        <InputField
+                            label="Confirme a senha"
+                            name="confirmPassword"
+                            type="password"
+                            value={formData.confirmPassword}
+                            error={errors.confirmPassword}
+                            onChange={handleChange}
+                            required
+                        />
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-200 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Resetting password...' : 'Reset Password'}
+                        </button>
+
+                        <p className="text-center text-gray-600 dark:text-gray-400">
+                            Lembrou sua senha?{' '}
+                            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+                                Login
+                            </Link>
+                        </p>
+                    </form>
+                </AuthCard>
+            </main>
         </div>
-
-        <button
-          type="submit"
-          disabled={!isEmailValid || isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-200 disabled:opacity-50"
-        >
-          {isLoading ? "Enviando..." : "Enviar link"}
-        </button>
-      </form>
-
-      <p className="mt-4 text-gray-600 dark:text-gray-300">
-        Lembrou sua senha? <a href="/login" className="text-blue-600 hover:underline">Faça login</a>.
-      </p>
-    </div>
-  );
+    );
 }

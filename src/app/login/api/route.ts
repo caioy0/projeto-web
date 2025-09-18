@@ -32,6 +32,14 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
+		// verificar usuario ativo
+		if (!user.active) {
+			return NextResponse.json(
+				{ error: 'Conta não ativada. Por favor, verifique seu email.' },
+				{ status: 403 }
+			);
+		}
+
 		// login Ok
 		return NextResponse.json(
 			{ message: 'Login realizado com sucesso!', user: { id: user.id, name: user.name, email: user.email } },
@@ -48,36 +56,36 @@ export async function POST(request: NextRequest) {
 
 // GET -> Pega usua spec
 export async function GET(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const id = url.searchParams.get('id');
+	try {
+		const url = new URL(request.url);
+		const id = url.searchParams.get('id');
 
-    if (!id) {
-      return NextResponse.json({ error: 'ID é obrigatório.' }, { status: 400 });
-    }
+		if (!id) {
+			return NextResponse.json({ error: 'ID é obrigatório.' }, { status: 400 });
+		}
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        active: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+		const user = await prisma.user.findUnique({
+			where: { id },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				active: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+		});
 
-    if (!user) {
-      return NextResponse.json({ error: 'Usuário não encontrado.' }, { status: 404 });
-    }
+		if (!user) {
+			return NextResponse.json({ error: 'Usuário não encontrado.' }, { status: 404 });
+		}
 
-    return NextResponse.json(user, { status: 200 });
+		return NextResponse.json(user, { status: 200 });
 
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Erro ao buscar usuário.' }, { status: 500 });
-  }
+	} catch (error) {
+		console.error(error);
+		return NextResponse.json({ error: 'Erro ao buscar usuário.' }, { status: 500 });
+	}
 }
 
 
@@ -85,7 +93,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
 	try {
 		const body = await request.json();
-		const { email, name, password, newemail } = body;
+		const { email, name, password, newemail, newtoken } = body;
 
 		if (!email) {
 			return NextResponse.json(
@@ -104,12 +112,29 @@ export async function PUT(request: NextRequest) {
 				return NextResponse.json({ error: 'Novo email já está em uso.' }, { status: 400 });
 			}
 		}
+		const user = await prisma.user.findUnique({ where: { email } });
+		if (!user) {
+			return NextResponse.json(
+				{ error: 'Usuário não encontrado.' },
+				{ status: 404 }
+			);
+		}
+		// Se estiver redefinindo senha, validar o token
+		if (newtoken) {
+			if (user.activationToken !== newtoken) {
+				return NextResponse.json(
+					{ error: 'Token inválido.' },
+					{ status: 400 }
+				);
+			}
+		}
 		const updatedUser = newemail ? await prisma.user.update({
 			where: { email },
 			data: {
 				...(name && { name }),
 				...(hashedPassword && { password: hashedPassword }),
-				...(newemail && { email: newemail })
+				...(newemail && { email: newemail }),
+				...(newtoken && { newtoken })
 			},
 		}) :
 			await prisma.user.update({

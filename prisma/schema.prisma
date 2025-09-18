@@ -10,18 +10,17 @@ datasource db {
   directUrl = env("LOCAL_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  active    Boolean  @default(true) 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model category {
+  id        String    @id
+  name      String    @unique(map: "Category_name_key")
+  slug      String    @unique(map: "Category_slug_key")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  product   product[]
 }
 
-model Product {
-  id          String   @id @default(cuid())
+model product {
+  id          String   @id
   name        String
   description String
   price       Decimal
@@ -30,15 +29,19 @@ model Product {
   quantity    Int
   categoryId  String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  category    Category @relation(fields: [categoryId], references: [id])
+  updatedAt   DateTime
+  category    category @relation(fields: [categoryId], references: [id], map: "Product_categoryId_fkey")
+
+  @@index([categoryId], map: "Product_categoryId_fkey")
 }
 
-model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  products  Product[]
+model user {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique(map: "User_email_key")
+  password        String
+  active          Boolean  @default(false)
+  activationToken String?  @unique(map: "User_activationToken_key")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

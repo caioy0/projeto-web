@@ -1,91 +1,102 @@
-import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
+const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
-    try {
-        const { email } = await request.json();
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const resetLink = 'http://localhost:3000'
+export async function GET(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const token = url.searchParams.get('token');
 
-        const htmlContent = `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 600px; margin: auto; padding: 20px;">
-    <h1 style="color: #0f172a;">Olá! 👋</h1>
-    <p>
-      Recebemos uma solicitação para redefinir a sua senha da sua conta no <strong>CloudGames</strong>.
-      Clique no botão abaixo para continuar o processo de recuperação:
-    </p>
-
-    <a
-      href="${resetLink}"
-      style="
-        display: inline-block;
-        padding: 12px 20px;
-        background-color: #f97316;
-        color: #ffffff;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: bold;
-        margin-top: 12px;
-      "
-    >
-      Redefinir senha
-    </a>
-
-    <p style="font-size: 14px; margin-top: 20px; color: #6b7280;">
-      Se o botão acima não funcionar, copie e cole este link no seu navegador:
-    </p>
-    <p style="font-size: 13px; color: #0f62fe; word-break: break-word;">
-      ${resetLink}
-    </p>
-
-    <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
-
-    <p style="font-size: 12px; color: #9ca3af;">
-      Caso você não tenha solicitado a redefinição de senha, ignore este email.
-    </p>
-
-    <p style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
-      Este link expira em 1 hora por motivos de segurança.
-    </p>
-  </div>
-`;
-
-        // Validate input
-        if (!email) {
-            return NextResponse.json(
-                { message: 'email is required' },
-                { status: 400 }
-            );
-        }
-        // valida usuario na base
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        });
-
-        if (!existingUser) {
-            return NextResponse.json(
-                { message: 'email didnt exist at our base' },
-                { status: 409 }
-            );
-        }
-
-        await resend.emails.send({
-            from: 'cloudgames <onboarding@resend.dev>',
-            to: [email],
-            subject: 'Redefinição de senha',
-            html: htmlContent
-        });
-
-        return NextResponse.json(
-            { message: 'Email para reset senha enviado!', user: { email } },
-            { status: 201 }
-        );
-    } catch (err) {
-        return NextResponse.json(
-            { error: 'Erro interno do servidor.' },
-            { status: 500 }
-        );
+    if (!token) {
+      return NextResponse.json(
+        { valid: false, message: 'Token is required' },
+        { status: 400 }
+      );
     }
+
+    // Verifica se o token existe e ainda é válido
+    const user = await prisma.user.findFirst({
+      where: { 
+        activationToken: token
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { valid: false, message: 'Invalid or expired token' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ 
+      valid: true, 
+      message: 'Token valid', 
+      email: user.email 
+    });
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { valid: false, message: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+export async function PUT(request: NextRequest) {
+  try {
+    const { token, newPassword } = await request.json();
+
+    if (!token || !newPassword) {
+      return NextResponse.json(
+        { error: "Token e nova senha são obrigatórios." },
+        { status: 400 }
+      );
+    }
+
+    // Valida tamanho mínimo da senha
+    if (newPassword.length < 6) {
+      return NextResponse.json(
+        { error: "A senha deve ter pelo menos 6 caracteres." },
+        { status: 400 }
+      );
+    }
+
+    // Busca o usuário pelo token
+    const user = await prisma.user.findFirst({
+      where: { activationToken: token }
+    });
+
+    if (!user?.activationToken) {
+      return NextResponse.json(
+        { error: "Token inválido." },
+        { status: 404 }
+      );
+    }
+
+    // Gera hash da nova senha
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Atualiza a senha e limpa o token
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        activationToken: null,
+      }
+    });
+
+    return NextResponse.json(
+      { message: "Senha atualizada com sucesso!" },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Erro interno do servidor." },
+      { status: 500 }
+    );
+  }
 }
