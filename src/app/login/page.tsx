@@ -83,7 +83,7 @@ export default function LoginPage() {
         Não tem uma conta? <a href="/register" className="text-blue-600 hover:underline">Registre-se aqui</a>.
       </p>
       <p className="mt-4 text-gray-600 dark:text-gray-300">
-        <a href="/reset-password" className="text-blue-600 hover:underline">Esqueceu sua senha?</a>
+        <a href="/reset-sender" className="text-blue-600 hover:underline">Esqueceu sua senha?</a>
       </p>
     </div>
   );

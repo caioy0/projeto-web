@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs'; // Using bcryptjs instead of bcrypt for better compatibility
+import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { Resend } from 'resend';
+import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +10,8 @@ export async function POST(request: NextRequest) {
     const prisma = new PrismaClient();
     const { name, email, password } = await request.json();
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const accessLink = 'http://localhost:3000'
+    const activationToken = crypto.randomBytes(32).toString('hex');
+    const accessLink = `http://localhost:3000/active?token=${activationToken}`
     const htmlContent = `
   <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
     <h1>Olá, ${name}! 👋</h1>
@@ -82,6 +84,7 @@ export async function POST(request: NextRequest) {
         name,
         email,
         password: hashedPassword,
+        activationToken,
       },
     });
 
