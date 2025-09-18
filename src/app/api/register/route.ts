@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     // Envia o email de ativação
     await transporter.sendMail({
-      from: `"Minha Empresa" <${process.env.SMTP_USER}>`,
+      from: `"CloudGames" <${process.env.SMTP_USER}>`,
       to: email,
       subject: 'Confirmação de Cadastro',
       html: `<p>Olá ${name},</p>

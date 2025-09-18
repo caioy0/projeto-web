@@ -39,7 +39,7 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
   `;
 
   await transporter.sendMail({
-    from: `"Minha Empresa" <${process.env.SMTP_USER}>`,
+    from: `"CloudGames" <${process.env.SMTP_USER}>`,
     to,
     subject: "Atualização do seu pedido",
     html,
@@ -150,7 +150,7 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
 
     const html = `<p>Olá, ${order.user.name},</p><p>Seu pedido #${order.id} foi cancelado.</p>`;
     await transporter.sendMail({
-      from: `"Minha Empresa" <${process.env.SMTP_USER}>`,
+      from: `"CloudGames" <${process.env.SMTP_USER}>`,
       to: order.user.email,
       subject: "Pedido cancelado",
       html,

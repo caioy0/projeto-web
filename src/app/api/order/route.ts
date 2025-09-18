@@ -40,7 +40,7 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
   `;
 
   await transporter.sendMail({
-    from: `"Minha Empresa" <${process.env.SMTP_USER}>`,
+    from: `"CloudGames" <${process.env.SMTP_USER}>`,
     to,
     subject: "Confirmação do seu pedido",
     html,

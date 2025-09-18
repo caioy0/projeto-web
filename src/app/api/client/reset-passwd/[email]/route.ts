@@ -39,7 +39,7 @@ export async function GET(
     const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password/${resetToken}`;
 
     await transporter.sendMail({
-      from: `"Minha Empresa" <${process.env.SMTP_USER}>`,
+      from: `"CloudGames" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Redefinição de senha",
       html: `<p>Olá ${client.name},</p>
