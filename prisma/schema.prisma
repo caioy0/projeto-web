@@ -42,3 +42,28 @@ model Category {
   updatedAt DateTime  @updatedAt
   products  Product[]
 }
+
+model Order {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  items      OrderItem[]
+  total      Decimal     @default(0)
+  status     String      @default("pending") // pending, paid, shipped, canceled, etc.
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal  // preço unitário no momento do pedido
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, productId]) // evita duplicar o mesmo produto no mesmo pedido
+}
