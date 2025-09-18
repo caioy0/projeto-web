@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       };
     });
 
-    // Create order
+    // Create ordergsdt
     const order = await prisma.order.create({
       data: {
         userId,
