@@ -5,11 +5,11 @@ import { useState } from "react";
 import Image from "next/image";
 
 type CardProps = {
-  id: number
+  id: string
   name: string
   price: number
   image: string
-  category: string
+  category?: string
   description: string
 }
 
@@ -45,7 +45,7 @@ export function Card({ name, price, image, description }: CardProps) {
         </h3>
         
         <p className="text-gray-700 dark:text-gray-300 font-semibold mt-1">
-          RS {price}
+          R$ {price.toFixed(2)}
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export function Card({ name, price, image, description }: CardProps) {
             </p>
             
             <p className="text-lg font-semibold text-gray-800 dark:text-white">
-              RS {price}
+              R$ {price.toFixed(2)}
             </p>
           </div>
         </div>
