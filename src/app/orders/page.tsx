@@ -1,14 +1,13 @@
-// @/app/orders/page.tsx
-import Header from "@/components/Header";
 import Orders from "@/components/Orders/Orders";
-export default async function Checkout() {
-    
-    return(
-        <main>
-            <Header/>
-            <div>
-                <Orders></Orders>
-            </div>
-        </main>
-    );
+import OrderForm from "@/components/Orders/OrdersForm";
+import Header from "@/components/Header";
+
+export default function OrdersPage() {
+  return (
+    <div className="space-y-8">
+    <Header></Header>
+      <OrderForm />
+      <Orders />
+    </div>
+  );
 }
