@@ -10,17 +10,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  active    Boolean  @default(true)
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique(map: "User_email_key")
+  password        String
+  active          Boolean  @default(false)
+  activationToken String?  @unique(map: "User_activationToken_key")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
-model product {
-  id          String   @id
+model Product {
+  id          String   @id @default(cuid())
   name        String
   description String
   price       Decimal
@@ -34,13 +35,11 @@ model product {
   category    Category @relation(fields: [categoryId], references: [id])
 }
 
-model user {
-  id              String   @id @default(cuid())
-  name            String
-  email           String   @unique(map: "User_email_key")
-  password        String
-  active          Boolean  @default(false)
-  activationToken String?  @unique(map: "User_activationToken_key")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
