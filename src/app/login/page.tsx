@@ -32,7 +32,7 @@ export default function LoginPage() {
         setError(data.error || "Erro ao fazer login.");
       }
     } catch (err) {
-      setError("Erro de conexão. Tente novamente.");
+      setError(`Erro: ${err}. Tente novamente.`);
     } finally {
       setIsLoading(false);
     }

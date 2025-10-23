@@ -43,7 +43,7 @@ export default function ResetSender() {
         setError(data.error || "Erro ao enviar link de redefinição.");
       }
     } catch (err) {
-      setError("Erro de conexão. Tente novamente.");
+      setError(`Error: ${err}. Tente novamente.`);
     } finally {
       setIsLoading(false);
     }

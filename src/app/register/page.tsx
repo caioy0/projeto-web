@@ -70,7 +70,7 @@ export default function Register() {
         setErrors({ submit: data.message });
       }
     } catch (error) {
-      setErrors({ submit: 'An error occurred. Please try again.' });
+      setErrors({ submit: `An error occurred: ${error}. Please try again.` });
     } finally {
       setIsLoading(false);
     }
