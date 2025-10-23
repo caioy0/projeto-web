@@ -1,0 +1,40 @@
+{
+    "Questão 1": {
+        "Qual o nome da loja virtual e quais produtos ou serviços serão vendidos?": 
+            "Cloud gaming"
+    },
+    "Questão 2": {
+        "API de Produto": [
+            "POST - gravar produto - ok",
+            "PUT - Alterar produto - ok",
+            "DELETE - remover produto - ok",
+            "GET - trazer por codigo um produto - ok",
+            "GET Listar - trazer lista de todos os produtos - ok",
+            "GET Vitrine - trazer lista de produtos em destaque na vitrine - ok ",
+            "GET Busca - trazer lista de produtos filtrando por um termo de busca - ok"
+        ]
+    },
+    "Questão 3": {
+        "API de Cliente": [
+            "POST - gravar cliente e enviar email para confirmação -ok",
+            "PUT - Alterar cliente - ok",
+            "DELETE - remover cliente - ok",
+            "GET - trazer por codigo um cliente - ok",
+            "GET Listar - trazer lista de todos os cliente - ok",
+            "POST FazerLogin - enviando email e senha fazer login carregando o objeto Cliente - ok",
+            "PATCH - Ativar um Cliente, atraves do link do email de confirmação mudar ativo=1 - ok",
+            "GET Redefinição de Senha - mandar email com link para redefinir senha - ok"
+        ]
+    },
+    "Questão 4": {
+        "API de Pedido": [
+            "POST - gravar pedido com itens e enviar email de confirmação de pedido",
+            "PUT - alterar pedido",
+            "DELETE - remover pedido",
+            "GET - trazer pedido por codigo",
+            "GET ListarPorCliente - listar todos os pedidos por codigo de cliente informado",
+            "GET ListarTodos - listar todos os pedidos da loja virtual"
+        ]
+    },
+    "Observação": "A apresentação do projeto deverá ser realizada em sala de aula no dia agendado para a P1"
+}
