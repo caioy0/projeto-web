@@ -19,7 +19,7 @@ export default function ActivePage() {
                     return;
                 }
 
-                const response = await fetch('/active/api', {
+                const response = await fetch('/api/active', {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token })

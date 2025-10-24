@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 // GET - listar todos os pedidos
-export async function GET(req: Request) {
+export async function GET() {
   try {
     // Buscar todos os pedidos
     const orders = await prisma.order.findMany({

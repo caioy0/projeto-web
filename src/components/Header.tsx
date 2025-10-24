@@ -49,7 +49,7 @@ export default function Header() {
       <header className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0 mt-0 py-4 px-6 bg-background text-foreground">
         <div>
           <Image 
-            src="/wave.svg" 
+            src="/wave.png" 
             alt="Next.js logo" 
             width={100} 
             height={25} 

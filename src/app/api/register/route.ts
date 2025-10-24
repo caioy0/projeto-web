@@ -1,72 +1,126 @@
 // @/app/api/register/route.ts
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import nodemailer from 'nodemailer';
+import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import prisma from '@/lib/prisma';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { name, email, password } = await request.json();
+    const activationToken = crypto.randomBytes(32).toString('hex');
+    const accessLink = `http://localhost:3000/active?token=${activationToken}`;
+    const htmlContent = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
+    <h1>Olá, ${name}! 👋</h1>
+    <p>Obrigado por criar sua conta na <strong>CloudGames</strong>. Ative sua conta clicando abaixo:</p>
+    <a href="${accessLink}" style="display:inline-block;padding:12px 20px;background-color:#0f62fe;color:#fff;border-radius:6px;text-decoration:none;font-weight:bold;margin-top:12px;">
+      Ativar minha conta
+    </a>
+    <p style="font-size: 14px; margin-top: 20px; color: #6b7280;">
+      Se o botão acima não funcionar, copie e cole este link no seu navegador:
+    </p>
+    <p style="font-size: 13px; color: #0f62fe; word-break: break-word;">
+      ${accessLink}
+    </p>    
+    <p style="font-size: 12px; color: #9ca3af; margin-top: 10px;">
+      Este link expira em 1 hora por motivos de segurança.
+    </p>
+  </div>
+`;
 
+    // Validate input
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Name, email, and password are required' },
+        { message: 'Name, email, and password are required' },
         { status: 400 }
       );
     }
 
-    // Hash da senha antes de salvar
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { message: 'Please provide a valid email address' },
+        { status: 400 }
+      );
+    }
 
-    // Gera token de ativação único
-    const activationToken = crypto.randomBytes(32).toString('hex');
+    // Validate password strength
+    if (password.length < 6) {
+      return NextResponse.json(
+        { message: 'Password must be at least 6 characters long' },
+        { status: 400 }
+      );
+    }
 
-    // Cria o usuário no banco com active: false
-    await prisma.user.create({
+    // valida usuario na base
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { message: 'User already exists with this email' },
+        { status: 409 }
+      );
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Configura transporte do Nodemailer
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST, // ex: smtp.gmail.com
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: false, // true para 465, false para outros
+      auth: {
+        user: process.env.SMTP_USER, // seu email
+        pass: process.env.SMTP_PASS, // sua senha ou App Password
+      },
+    });
+
+    // Enviar e-mail
+    await transporter.sendMail({
+      from: `"CloudGames" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Primeiro acesso',
+      html: htmlContent,
+    });
+
+    // Create user
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        active: false, // não ativo ainda
         activationToken,
       },
     });
 
-    // Configura o transporte de email usando variáveis de ambiente
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    // Link de ativação
-    const activationLink = `${process.env.NEXT_PUBLIC_APP_URL}/activate/${activationToken}`;
-
-    // Envia o email de ativação
-    await transporter.sendMail({
-      from: `"CloudGames" <${process.env.SMTP_USER}>`,
-      to: email,
-      subject: 'Confirmação de Cadastro',
-      html: `<p>Olá ${name},</p>
-             <p>Seu cadastro foi realizado com sucesso!</p>
-             <p>Clique no link abaixo para ativar sua conta:</p>
-             <a href="${activationLink}">${activationLink}</a>`,
-    });
-
     return NextResponse.json(
-      { message: 'User registered successfully. Check your email to activate the account.' },
+      {
+        message: 'Usuário criado com sucesso!',
+        user: { id: user.id, name: user.name, email: user.email },
+      },
       { status: 201 }
     );
-
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('POST /register/api error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erro interno do servidor.' },
       { status: 500 }
     );
+  }
+}
+
+// GET -> listar usuários
+export async function GET() {
+  try {
+    const users = await prisma.user.findMany();
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    console.error('GET /register/api error:', error);
+    return NextResponse.json({ error: 'Erro ao buscar usuários.' }, { status: 500 });
   }
 }
