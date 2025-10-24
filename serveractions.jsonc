@@ -1,0 +1,107 @@
+{
+  // Comparativo: API RESTful vs Server Actions (Next.js)
+
+  "api_restful": {
+    "descricao": "Endpoints HTTP tradicionais (GET, POST, PUT, DELETE) que retornam JSON e podem ser consumidos por qualquer cliente.",
+    "exemplo": {
+      "arquivo": "/api/products/route.ts",
+      "codigo": [
+        "import { NextResponse } from 'next/server';",
+        "",
+        "export async function GET() {",
+        "  const products = await db.product.findMany();",
+        "  return NextResponse.json(products);",
+        "}",
+        "",
+        "export async function POST(req: Request) {",
+        "  const data = await req.json();",
+        "  const product = await db.product.create({ data });",
+        "  return NextResponse.json(product);",
+        "}"
+      ]
+    },
+    "caracteristicas": {
+      "separacao_front_backend": true,
+      "chamada": "fetch ou axios (requisição HTTP)",
+      "formato_resposta": "JSON (HTTP)",
+      "autenticacao": "Manual (JWT, headers, cookies)",
+      "reuso_outros_apps": true,
+      "performance": "Boa (com overhead HTTP)",
+      "debug": "Visível no DevTools",
+      "deploy": "Pode ser separado (microserviços)"
+    },
+    "quando_usar": [
+      "Quando há integração com outros sistemas (mobile, Angular, etc.)",
+      "Quando o frontend e backend são separados",
+      "Quando é necessário versionamento ou autenticação complexa",
+      "Quando se quer controle total sobre respostas HTTP"
+    ]
+  },
+
+  "server_actions": {
+    "descricao": "Funções executadas diretamente no servidor (Next.js 13+), chamadas como funções normais no React, sem criar rotas HTTP.",
+    "exemplo": {
+      "arquivo": "app/products/actions.ts",
+      "codigo": [
+        "\"use server\";",
+        "import { db } from '@/lib/db';",
+        "",
+        "export async function createProduct(data: FormData) {",
+        "  const name = data.get('name') as string;",
+        "  await db.product.create({ data: { name } });",
+        "}"
+      ],
+      "uso_no_componente": [
+        "<form action={createProduct}>",
+        "  <input name='name' />",
+        "  <button type='submit'>Criar</button>",
+        "</form>"
+      ]
+    },
+    "caracteristicas": {
+      "separacao_front_backend": false,
+      "chamada": "Função direta (sem fetch)",
+      "formato_resposta": "Retorno direto da função",
+      "autenticacao": "Automática (usa contexto do servidor)",
+      "reuso_outros_apps": false,
+      "performance": "Alta (sem overhead HTTP)",
+      "debug": "Executa no servidor (menos visível no client)",
+      "deploy": "Mesmo ambiente do frontend (serverless unificado)"
+    },
+    "quando_usar": [
+      "Quando o projeto é 100% Next.js (fullstack)",
+      "Para formulários e ações internas simples",
+      "Quando quer evitar boilerplate de API routes",
+      "Quando busca maior performance e simplicidade"
+    ]
+  },
+
+  "comparacao_geral": {
+    "API RESTful": {
+      "chamado_via": "HTTP (fetch)",
+      "executa_em": "Servidor separado",
+      "ideal_para": "APIs públicas e integrações externas",
+      "overhead": "Requisição HTTP",
+      "seguranca": "Autenticação manual",
+      "reutilizavel_fora_nextjs": true,
+      "performance": "Média"
+    },
+    "Server Actions": {
+      "chamado_via": "Função direta no React",
+      "executa_em": "Mesmo servidor do Next",
+      "ideal_para": "Formulários e ações internas",
+      "overhead": "Nenhum (sem HTTP)",
+      "seguranca": "Usa sessão do servidor",
+      "reutilizavel_fora_nextjs": false,
+      "performance": "Alta"
+    }
+  },
+
+  "combinacao_recomendada": {
+    "descricao": "Usar ambos no mesmo projeto para aproveitar o melhor dos dois mundos.",
+    "exemplo": {
+      "server_actions": "Para operações internas (admin, CRUD simples)",
+      "api_restful": "Para expor dados públicos ou integrações externas"
+    }
+  }
+}

@@ -1,11 +1,13 @@
-// 
 import Header from "@/components/Header"
 
-export default async function CategoryPage(){
+export default async function ResetPasswd() {
     return (
         <main>
             <div>
-                <Header></Header>
+               <Header/> 
+            </div>
+            <div>
+
             </div>
         </main>
     )

@@ -1,5 +1,4 @@
 // @/component/Product/GetProduct.tsx
-
 import prisma from "@/lib/prisma";
 import { Card } from "@/components/Cards";
 

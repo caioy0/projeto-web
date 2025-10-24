@@ -1,6 +1,6 @@
 // @/app/active/page.tsx
 
-import Active from "@/components/Confirm/Active";
+import Active from "@/components/Forms/Active";
 import Header from "@/components/Header";
 import { Suspense } from 'react';
 
