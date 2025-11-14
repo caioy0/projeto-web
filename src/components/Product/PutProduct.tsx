@@ -1,16 +1,7 @@
 // @/components/Product/PutProduct.tsx
 'use client'
 import { updateProduct } from "@/actions/product";
-
-type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-  sale: boolean;
-  salePrice: number | null;
-};
+import type { Product } from "@/types/product";
 
 export default function PutProduct({ product }: { product: Product }) {
   return (

@@ -85,9 +85,17 @@ export async function updateProduct(id: string, formData: FormData) {
   revalidatePath("/product/");
 }
 
-// DELETE
+// DELETE product
 export async function deleteProduct(id: string) {
-  await prisma.product.delete({ where: { id } });
+  try {
+    await prisma.product.delete({
+      where: { id },
+    });
 
-  revalidatePath("/product/");
+    // Atualiza a lista de produtos
+    revalidatePath("/product");
+  } catch (error) {
+    console.error("Erro ao deletar produto:", error);
+    throw new Error("Falha ao deletar o produto");
+  }
 }

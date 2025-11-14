@@ -36,7 +36,7 @@ export default async function ProductsList({ search, category }: ProductsListPro
           id={product.id}
           name={product.name}
           price={Number(product.price)}
-          image={product.image ?? "/placeholder.png"}
+          image={product.image ?? "/placeholder.jpg"}
           description={product.description ?? ""}
           category={product.categoryId} // ou category.name se você fizer include
         />

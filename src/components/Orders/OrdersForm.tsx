@@ -3,65 +3,64 @@
 
 import React, { useState, useEffect, useTransition } from "react";
 
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-};
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-};
+type Product = { id: string; name: string; price: number };
+type User = { id: string; name: string; email: string };
 
 export default function OrderForm() {
   const [users, setUsers] = useState<User[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedUser, setSelectedUser] = useState("");
-  const [items, setItems] = useState<{ productId: string; quantity: number }[]>(
-    []
-  );
+  const [items, setItems] = useState<{ productId: string; quantity: number }[]>([
+    { productId: "", quantity: 1 },
+  ]);
+
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
 
-  // Busca usuários e produtos
+  // Fetch Users + Products
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       try {
-        const usersRes = await fetch("/api/users"); // você precisa ter esse endpoint
-        const prodsRes = await fetch("/api/products"); // idem para produtos
-        setUsers(await usersRes.json());
-        setProducts(await prodsRes.json());
+        const [u, p] = await Promise.all([
+          fetch("/api/users").then((r) => r.json()),
+          fetch("/api/products").then((r) => r.json()),
+        ]);
+
+        setUsers(u);
+        setProducts(p);
       } catch (err) {
         console.error("Erro ao buscar dados:", err);
       }
-    };
-    fetchData();
+    })();
   }, []);
 
-  // Adiciona produto ao pedido
-  const addItem = () => {
-    setItems([...items, { productId: "", quantity: 1 }]);
+  const updateItem = (
+    i: number,
+    field: "productId" | "quantity",
+    value: string | number
+  ) => {
+    setItems((prev) =>
+      prev.map((item, index) =>
+        index !== i
+          ? item
+          : {
+              ...item,
+              [field]: field === "quantity" ? Number(value) : value,
+            }
+      )
+    );
   };
 
-  // Atualiza item
-  const updateItem = (index: number, field: string, value: string | number) => {
-    const newItems = [...items];
-    if (field === "productId") newItems[index].productId = value as string;
-    if (field === "quantity")
-      newItems[index].quantity = Number(value) > 0 ? Number(value) : 1;
-    setItems(newItems);
-  };
+  const addItem = () => setItems([...items, { productId: "", quantity: 1 }]);
 
-  // Remove item
-  const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
+  const removeItem = (i: number) => setItems(items.filter((_, idx) => idx !== i));
 
-  // Envia pedido
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!selectedUser) return setMessage("⚠️ Selecione um usuário.");
+    if (!items.every((i) => i.productId)) return setMessage("⚠️ Todos os itens precisam de produto.");
+
     startTransition(async () => {
       try {
         const res = await fetch("/api/order", {
@@ -70,13 +69,12 @@ export default function OrderForm() {
           body: JSON.stringify({ userId: selectedUser, items }),
         });
 
-        if (!res.ok) throw new Error("Erro ao criar pedido");
+        if (!res.ok) throw new Error();
 
         setMessage("✅ Pedido criado com sucesso!");
-        setItems([]);
+        setItems([{ productId: "", quantity: 1 }]);
         setSelectedUser("");
-      } catch (err) {
-        console.error(err);
+      } catch {
         setMessage("❌ Erro ao criar pedido.");
       }
     });
@@ -91,14 +89,14 @@ export default function OrderForm() {
 
       {message && <p className="text-center">{message}</p>}
 
-      {/* Selecionar usuário */}
+      {/* User */}
       <div>
         <label className="block mb-1 font-medium">Usuário</label>
         <select
           value={selectedUser}
           onChange={(e) => setSelectedUser(e.target.value)}
-          required
           className="border px-3 py-2 rounded w-full"
+          required
         >
           <option value="">Selecione um usuário</option>
           {users.map((u) => (
@@ -109,17 +107,14 @@ export default function OrderForm() {
         </select>
       </div>
 
-      {/* Itens do pedido */}
+      {/* Items */}
       <div>
         <label className="block mb-1 font-medium">Itens</label>
         {items.map((item, index) => (
           <div key={index} className="flex space-x-2 mb-2">
             <select
               value={item.productId}
-              onChange={(e) =>
-                updateItem(index, "productId", e.target.value)
-              }
-              required
+              onChange={(e) => updateItem(index, "productId", e.target.value)}
               className="border px-3 py-2 rounded w-full"
             >
               <option value="">Selecione um produto</option>
@@ -129,15 +124,15 @@ export default function OrderForm() {
                 </option>
               ))}
             </select>
+
             <input
               type="number"
               min={1}
               value={item.quantity}
-              onChange={(e) =>
-                updateItem(index, "quantity", e.target.value)
-              }
+              onChange={(e) => updateItem(index, "quantity", e.target.value)}
               className="border px-3 py-2 rounded w-20"
             />
+
             <button
               type="button"
               onClick={() => removeItem(index)}
@@ -147,6 +142,7 @@ export default function OrderForm() {
             </button>
           </div>
         ))}
+
         <button
           type="button"
           onClick={addItem}
@@ -156,12 +152,13 @@ export default function OrderForm() {
         </button>
       </div>
 
+      {/* Submit */}
       <button
         type="submit"
         disabled={isPending}
         className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
       >
-        Criar Pedido
+        {isPending ? "Criando..." : "Criar Pedido"}
       </button>
     </form>
   );
