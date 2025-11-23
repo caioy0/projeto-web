@@ -80,3 +80,4 @@ export async function getCurrentUser(token: string | undefined) {
     select: { id: true, email: true, name: true },
   });
 }
+

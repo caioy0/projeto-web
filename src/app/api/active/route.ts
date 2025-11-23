@@ -1,5 +1,4 @@
 // @/app/api/active/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import Prisma from '@/lib/prisma';
 

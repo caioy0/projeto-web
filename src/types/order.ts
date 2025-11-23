@@ -1,13 +1,13 @@
 // @/types/order.ts
 
-type OrderItem = {
+export interface OrderItem {
   id: string;
   productId: string;
   quantity: number;
   price: number;
 };
 
-type Order = {
+export interface Order {
   id: string;
   user: { name: string; email: string };
   total: number;
