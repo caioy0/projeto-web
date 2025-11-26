@@ -102,6 +102,12 @@ export default function Header() {
         >
           Orders
         </Link>
+        <Link
+          href="/cart"
+          className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
+        >
+          Cart
+        </Link>
 
         {isLoggedIn ? (
           <>

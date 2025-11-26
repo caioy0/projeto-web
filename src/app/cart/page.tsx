@@ -1,4 +1,4 @@
-// app/cart/page.tsx
+// @/app/cart/page.tsx
 import CartClient from "@/components/Orders/CartClient";
 import prisma from "@/lib/prisma";
 import { getServerUser } from "@/lib/getServerUser";
@@ -21,7 +21,6 @@ export default async function CartPage() {
     where: { userId: user.id },
   });
 
-  // Parse items
   const items: CartItem[] = Array.isArray(cart?.items)
     ? (cart?.items as CartItem[])
     : typeof cart?.items === "string"
@@ -31,8 +30,6 @@ export default async function CartPage() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-2xl font-semibold mb-4">Seu Carrinho</h1>
-
-      {/* Passando userId corretamente */}
       <CartClient items={items} userId={user.id} />
     </div>
   );

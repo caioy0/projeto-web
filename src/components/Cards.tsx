@@ -1,8 +1,9 @@
 // src/components/Cards.tsx
 'use client'
 
-import { useState } from "react";
+import { useState, TransitionEvent } from "react";
 import Image from "next/image";
+import { updateCart } from "@/actions/cart"; // importa a server action
 
 type CardProps = {
   id: string
@@ -11,11 +12,32 @@ type CardProps = {
   image: string
   category?: string
   description: string
+  userId?: string // precisa receber o userId do usuário logado
 }
 
-export function Card({ name, price, image, description }: CardProps) {
+export function Card({ id, name, price, image, description, userId }: CardProps) {
   const [isOpen, setIsOpen] = useState(false)
-  
+  const [loading, setLoading] = useState(false)
+
+  const handleAddToCart = async () => {
+    if (!userId) {
+      alert("Você precisa estar logado para adicionar ao carrinho.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // adiciona 1 unidade do produto
+      await updateCart(userId, [{ productId: id, quantity: 1 }]);
+      alert("Produto adicionado ao carrinho!");
+    } catch (err) {
+      console.error("Erro ao adicionar ao carrinho:", err);
+      alert("Erro ao adicionar ao carrinho.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -87,9 +109,18 @@ export function Card({ name, price, image, description }: CardProps) {
               {description}
             </p>
             
-            <p className="text-lg font-semibold text-gray-800 dark:text-white">
+            <p className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
               R$ {price.toFixed(2)}
             </p>
+
+            {/* Botão de adicionar ao carrinho */}
+            <button
+              onClick={handleAddToCart}
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition disabled:opacity-50"
+            >
+              {loading ? "Adicionando..." : "Adicionar ao carrinho"}
+            </button>
           </div>
         </div>
       )}
