@@ -9,20 +9,20 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check authentication status on component mount
+  // Checa status de autenticação ao montar
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/api/auth/status');
+      const response = await fetch('/api/auth/status', { cache: "no-store" });
       if (response.ok) {
         const data = await response.json();
         setIsLoggedIn(data.isAuthenticated);
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error('Erro ao checar status de login:', error);
     } finally {
       setIsLoading(false);
     }
@@ -33,24 +33,22 @@ export default function Header() {
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
       });
-      
       if (response.ok) {
         setIsLoggedIn(false);
-        window.location.href = '/'; // Redirect to home page
+        window.location.href = '/'; // redireciona para home
       }
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Erro ao deslogar:', error);
     }
   };
 
-  // Show loading state briefly
   if (isLoading) {
     return (
-      <header className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0 mt-0 py-4 px-6 bg-background text-foreground">
+      <header className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0 py-4 px-6 bg-background text-foreground">
         <div>
           <Image 
             src="/wave.png" 
-            alt="Next.js logo" 
+            alt="Logo" 
             width={100} 
             height={25} 
             priority 
@@ -65,16 +63,16 @@ export default function Header() {
   }
 
   return (
-    <header className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0 mt-0 py-4 px-6 bg-background text-foreground">
+    <header className="flex flex-col md:flex-row justify-between items-center md:items-start space-y-5 md:space-y-0 py-4 px-6 bg-background text-foreground">
       <div>
         <Link href="/">
           <Image 
             src="/wave.png" 
-            alt="Next.js logo" 
+            alt="Logo" 
             width={100} 
             height={25} 
             priority 
-            className=" hover:opacity-80 transition-opacity"
+            className="hover:opacity-80 transition-opacity"
           />
         </Link>
       </div>
@@ -82,61 +80,55 @@ export default function Header() {
       <nav className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
         <Link
           href="/"
-          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+          className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
         >
           Menu
         </Link>
-        
         <Link
-          href="/about/"
-          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+          href="/about"
+          className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
         >
           About us
         </Link>
-
         <Link
-          href="/product/"
-          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+          href="/product"
+          className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
         >
           Product Page
         </Link>
         <Link
-          href="/orders/"
-          className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+          href="/orders"
+          className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
         >
           Orders
         </Link>
 
         {isLoggedIn ? (
-          // Show these when user is logged in
           <>
             <Link
               href="/settings"
-              className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+              className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
             >
               Settings
             </Link>
-            
             <button
               onClick={handleLogout}
-              className="text-lg font-medium text-foreground hover:bg-red-100 dark:hover:bg-red-900 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+              className="text-lg font-medium text-red-600 hover:bg-red-100 dark:hover:bg-red-900 transition px-4 py-2 rounded-md"
             >
               Logout
             </button>
           </>
         ) : (
-          // Show these when user is logged out
           <>
             <Link
               href="/login"
-              className="text-lg font-medium text-foreground hover:bg-gray-200 dark:hover:bg-gray-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+              className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
             >
               Login
             </Link>
-            
             <Link
               href="/register"
-              className="text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition duration-300 ease-in-out hover:shadow-md px-4 py-2 rounded-md"
+              className="text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition px-4 py-2 rounded-md"
             >
               Register
             </Link>

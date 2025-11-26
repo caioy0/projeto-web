@@ -17,7 +17,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    // Verifica se senha bate (hashing recomendado em produção)
     const passwordMatches = await bcrypt.compare(password, client.password);
 
     if (!passwordMatches) {
@@ -28,7 +27,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Account not activated" }, { status: 403 });
     }
 
-    return NextResponse.json({ message: "Login successful", client }, { status: 200 });
+    // 🔑 Aqui você gera um token simples (pode ser JWT ou apenas o ID do usuário)
+    const sessionToken = client.id.toString(); // exemplo simples, em produção use JWT
+
+    const response = NextResponse.json(
+      { message: "Login successful", client },
+      { status: 200 }
+    );
+
+    // Define cookie de sessão
+    response.cookies.set("session", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 dia
+    });
+
+    return response;
   } catch (error) {
     console.error("POST /api/auth/login error:", error);
     return NextResponse.json({ error: "Error logging in" }, { status: 500 });

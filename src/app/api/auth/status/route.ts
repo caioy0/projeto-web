@@ -1,3 +1,4 @@
+// @/app/api/auth/status/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 // import { getToken } from 'next-auth/jwt'; // NextAuth.js
 
