@@ -8,7 +8,7 @@ interface LoginFormProps {
   onSuccessRedirect?: string; // optional redirect path after login
 }
 
-export default function LoginForm({ onSuccessRedirect = '/dashboard' }: LoginFormProps) {
+export default function LoginForm({ onSuccessRedirect = '/' }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +21,7 @@ export default function LoginForm({ onSuccessRedirect = '/dashboard' }: LoginFor
     setError(null);
 
     try {
-      const res = await fetch('/login/api', {
+      const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
