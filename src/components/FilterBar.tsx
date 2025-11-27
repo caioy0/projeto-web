@@ -6,9 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 type FilterProps = {
   category: string;
   search: string;
+  categories: { slug: string; name: string }[];
 };
 
-export default function Filter({ category, search }: FilterProps) {
+export default function Filter({ category, search,  }: FilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

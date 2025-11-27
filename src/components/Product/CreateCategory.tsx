@@ -11,7 +11,7 @@ export default function CreateCategoryPage() {
       <div className="w-full max-w-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-white mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-purple-400 via-pink-400 to-white mb-3">
             Nova Categoria
           </h1>
           <p className="text-gray-400 text-sm md:text-base">
@@ -42,7 +42,7 @@ export default function CreateCategoryPage() {
             
             <button
               type="submit"
-              className="group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent font-bold rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/25"
+              className="group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent font-bold rounded-xl text-white bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/25"
             >
               <FolderPlus size={20} className="group-hover:scale-110 transition-transform" />
               Criar Categoria

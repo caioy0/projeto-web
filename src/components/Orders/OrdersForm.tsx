@@ -23,8 +23,8 @@ export default function OrderForm() {
     (async () => {
       try {
         const [u, p] = await Promise.all([
-          fetch("/api/users").then((r) => r.json()),
-          fetch("/api/products").then((r) => r.json()),
+          fetch("/api/client").then((r) => r.json()),
+          fetch("/api/product").then((r) => r.json()),
         ]);
         setUsers(u);
         setProducts(p);
@@ -80,7 +80,7 @@ export default function OrderForm() {
       <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         <div className="mb-8 text-center md:text-left">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-white w-fit mx-auto md:mx-0">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-purple-400 via-pink-400 to-white w-fit mx-auto md:mx-0">
             Novo Pedido
           </h1>
           <p className="text-gray-400 mt-2">
@@ -188,7 +188,7 @@ export default function OrderForm() {
             <button
               type="submit"
               disabled={isPending}
-              className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPending ? (
                 <span className="flex items-center gap-2">Processando...</span>
