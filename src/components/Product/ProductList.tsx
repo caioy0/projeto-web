@@ -38,7 +38,9 @@ export default async function ProductsList({ search, category }: ProductsListPro
           price={Number(product.price)}
           image={product.image ?? "/placeholder.jpg"}
           description={product.description ?? ""}
-          category={product.categoryId} // ou category.name se você fizer include
+          category={product.categoryId}
+          sale={product.sale}
+          salePrice={product.salePrice ?? 0}
         />
       ))}
     </div>

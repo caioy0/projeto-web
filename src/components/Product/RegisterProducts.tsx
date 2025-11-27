@@ -106,21 +106,6 @@ export default async function RegisterProductsPage() {
                     className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
                   />
                 </div>
-
-                 <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-300 mb-2">
-                Quantidade em Estoque <span className="text-purple-400">*</span>
-                </label>
-                <input
-                type="number"
-                id="quantity"
-                name="quantity"
-                required
-                min="0"
-                className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                />
-            </div>
-
             <div className="md:col-span-2">
                 <CategorySelect categories={categories} />
             </div>
