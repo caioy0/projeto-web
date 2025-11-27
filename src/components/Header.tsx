@@ -100,12 +100,6 @@ export default function Header() {
                >
                  <Settings size={20} />
                </Link>
-              <Link
-                  href="/cart"
-                  className="text-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition px-4 py-2 rounded-md"
-               >
-                  Cart
-              </Link>
                <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors px-4 py-2 rounded-md hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
