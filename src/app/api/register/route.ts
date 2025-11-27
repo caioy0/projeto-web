@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, password } = await request.json();
     const activationToken = crypto.randomBytes(32).toString('hex');
-    const accessLink = `http://localhost:3000/active?token=${activationToken}`;
+    const accessLink = `https://projeto-web-delta.vercel.app//active?token=${activationToken}`;
     const htmlContent = `
   <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
     <h1>Olá, ${name}! 👋</h1>
