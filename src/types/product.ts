@@ -30,16 +30,21 @@ export interface FullProduct extends ProductSummary {
   categoryId: string
   sale: boolean;
   salePrice: number | null;
+  image: string | null
   createdAt: Date
   updatedAt: Date
 };
 
-export interface Product  {
+export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
-  quantity: number;
   sale: boolean;
-  salePrice: number | null;
-};
+  salePrice?: number | null;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
+  image?: string | null;   // <-- torne opcional
+  categoryId: string;
+}

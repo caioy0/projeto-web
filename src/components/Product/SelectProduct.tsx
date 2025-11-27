@@ -36,6 +36,7 @@ export default function SelectProduct({
   
   const generateFullProduct = (data: ProductSummary): FullProduct => ({
     ...data,
+    image: null, // Ensure image is present, fallback to null or a default value
     price: 0,
     sale: false,
     salePrice: null,
@@ -140,7 +141,7 @@ export default function SelectProduct({
         <div className="animate-in fade-in slide-in-from-top-2">
             <button
             onClick={() => setIsEditing(true)}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
             >
             <Edit size={18} />
             Editar Detalhes do Produto

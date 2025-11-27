@@ -17,7 +17,7 @@ export default async function RegisterProductsPage() {
       <div className="w-full max-w-4xl">
         
         <div className="mb-10 text-center md:text-left animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-white w-fit mx-auto md:mx-0">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-purple-400 via-pink-400 to-white w-fit mx-auto md:mx-0">
             Registrar Novo Produto
           </h1>
           <p className="mt-2 text-gray-400">
@@ -65,6 +65,38 @@ export default async function RegisterProductsPage() {
                     className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all resize-none"
                   />
                 </div>
+                <div className="md:col-span-2">
+                  <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-300 mb-2">
+                    Inserir Imagem por Link (opcional)
+                  </label>
+                  <input
+                    type="url"
+                    id="imageUrl"
+                    name="imageUrl"
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                  />
+                  <p className="mt-2 text-xs text-gray-500">
+                    Cole a URL de uma imagem hospedada online.
+                  </p>
+                </div>
+
+                <div className="md:col-span-2 mt-4">
+                  <label htmlFor="images" className="block text-sm font-medium text-gray-300 mb-2">
+                    Upload de Imagens (opcional)
+                  </label>
+                  <input
+                    type="file"
+                    id="images"
+                    name="images"
+                    accept="image/*"
+                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-500"
+                  />
+                  <p className="mt-2 text-xs text-gray-500">
+                    Você pode enviar múltiplas imagens (PNG, JPG, etc).
+                  </p>
+                </div>
+
               </div>
             </div>
 
@@ -155,7 +187,7 @@ export default async function RegisterProductsPage() {
             </button>
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 px-8 py-3 text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
+              className="flex items-center justify-center gap-2 px-8 py-3 text-sm font-bold text-white bg-linear-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
             >
               <Save size={18} /> Criar Produto
             </button>

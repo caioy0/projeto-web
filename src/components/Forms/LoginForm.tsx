@@ -53,7 +53,7 @@ export default function LoginForm({ onSuccessRedirect = '/' }: LoginFormProps) {
       <div className="w-full max-w-md bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-white mb-2">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-purple-400 via-pink-400 to-white mb-2">
             Bem-vindo
           </h1>
           <p className="text-gray-400 text-sm">
@@ -111,7 +111,7 @@ export default function LoginForm({ onSuccessRedirect = '/' }: LoginFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full flex justify-center items-center gap-2 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+            className="mt-4 w-full flex justify-center items-center gap-2 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? (
               <>

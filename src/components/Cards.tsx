@@ -57,7 +57,6 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
 
         if (!authData.isAuthenticated) {
           router.push("/");
-          alert('faca login!!')
           return;
         }
 

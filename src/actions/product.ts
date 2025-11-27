@@ -3,6 +3,8 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { writeFile } from "fs/promises";
+import path from "path";
 import prisma from "@/lib/prisma";
 import slugify from "slugify";
 
@@ -19,7 +21,7 @@ export async function createCategory(formData: FormData): Promise<void> {
   });
 
   // Optionally redirect after creation
-  redirect("/product"); 
+  redirect("/"); 
 }
 
 // Create products in @app/register-product
@@ -36,6 +38,7 @@ export async function createProduct(formData: FormData) {
       : null;
     const quantity = parseInt(formData.get("quantity") as string);
     const categoryId = formData.get("categoryId") as string;
+    const image = formData.get("image") as string | null;
 
     await prisma.product.create({
       data: {
@@ -47,6 +50,7 @@ export async function createProduct(formData: FormData) {
         salePrice,
         quantity,
         categoryId,
+        image,
       },
     });
 
@@ -72,6 +76,22 @@ export async function updateProduct(id: string, formData: FormData) {
   const salePriceRaw = formData.get("salePrice")?.toString();
   const salePrice = salePriceRaw ? parseFloat(salePriceRaw) : null;
 
+  let imagePath: string | null = null;
+
+  const file = formData.get("image") as File | null;
+  const imageUrl = formData.get("imageUrl") as string | null;
+
+  if (file && file.size > 0) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const fileName = `${Date.now()}-${file.name}`;
+    const filePath = path.join(process.cwd(), "public/uploads", fileName);
+    await writeFile(filePath, buffer);
+    imagePath = `/uploads/${fileName}`;
+  } else if (imageUrl && imageUrl.trim() !== "") {
+    imagePath = imageUrl;
+  }
+
   const existingProduct = await prisma.product.findUnique({ where: { id } });
   if (!existingProduct) {
     throw new Error(`Produto com ID ${id} não encontrado.`);
@@ -79,7 +99,7 @@ export async function updateProduct(id: string, formData: FormData) {
 
   await prisma.product.update({
     where: { id },
-    data: { name, description, price, quantity, sale, salePrice },
+    data: { name, description, price, quantity, sale, salePrice, image: imagePath },
   });
 
   revalidatePath("/product/");

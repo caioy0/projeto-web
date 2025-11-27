@@ -3,7 +3,7 @@
 
 import { updateProduct } from "@/actions/product";
 import type { Product } from "@/types/product";
-import { Save, DollarSign, Package, Tag, FileText, Type } from "lucide-react";
+import { Save, DollarSign, Package, Tag, FileText, Type, Image as ImageIcon } from "lucide-react";
 
 export default function PutProduct({ product }: { product: Product }) {
   return (
@@ -37,8 +37,38 @@ export default function PutProduct({ product }: { product: Product }) {
           />
         </div>
 
+        {/* Novo campo para imagem */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-400 ml-1 uppercase tracking-wider flex items-center gap-2">
+            <ImageIcon size={14} /> Imagem do Produto
+          </label>
+
+          {/* Upload de arquivo */}
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-500"
+          />
+
+          {/* Inserir via link */}
+          <input
+            type="url"
+            name="imageUrl"
+            placeholder="https://exemplo.com/imagem.jpg"
+            defaultValue={product.image ?? ""}
+            className="mt-3 w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+          />
+
+          {product.image && (
+            <p className="mt-2 text-xs text-gray-500">
+              Imagem atual: <span className="text-purple-400">{product.image}</span>
+            </p>
+          )}
+        </div>
+
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
           <div className="space-y-1">
             <label className="text-xs font-medium text-gray-400 ml-1 uppercase tracking-wider">
               Preço Base
@@ -121,7 +151,7 @@ export default function PutProduct({ product }: { product: Product }) {
         <div className="pt-4">
           <button
             type="submit"
-            className="w-full flex justify-center items-center gap-2 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
+            className="w-full flex justify-center items-center gap-2 py-3.5 bg-linear-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all transform hover:-translate-y-0.5"
           >
             <Save size={18} />
             Salvar Alterações
