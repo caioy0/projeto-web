@@ -56,7 +56,8 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
         const authData = await authRes.json();
 
         if (!authData.isAuthenticated) {
-          router.push("/login");
+          router.push("/");
+          alert('faca login!!')
           return;
         }
 
