@@ -1,7 +1,7 @@
 // src/components/Cards.tsx
 'use client'
 
-import { useState } from "react";
+import { useState, useRef, MouseEvent } from "react";
 import Image from "next/image";
 
 type CardProps = {
@@ -15,11 +15,38 @@ type CardProps = {
 
 export function Card({ name, price, image, description }: CardProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const divRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return;
+
+    const rect = divRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    divRef.current.style.setProperty("--mouse-x", `${x}px`);
+    divRef.current.style.setProperty("--mouse-y", `${y}px`);
+  };
+
+  const handleMouseEnter = () => {
+    setIsFocused(true);
+    divRef.current?.style.setProperty("--opacity", "1");
+  };
+
+  const handleMouseLeave = () => {
+    setIsFocused(false);
+    divRef.current?.style.setProperty("--opacity", "0");
+  };
   
   return (
     <>
       <div
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 cursor-pointer hover:scale-105 transition duration-300 border border-gray-200 dark:border-gray-700"
+        ref={divRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="group relative overflow-hidden rounded-2xl border border-gray-800 bg-gray-950/50 p-4 cursor-pointer transition-all duration-300 hover:border-purple-500/30 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/10"
         onClick={() => setIsOpen(true)}
         role="button"
         tabIndex={0}
@@ -30,46 +57,57 @@ export function Card({ name, price, image, description }: CardProps) {
           }
         }}
       >
-        <div className="relative w-full h-40 rounded-xl overflow-hidden">
-          <Image
-            src={image}
-            alt={name}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
-          />
+        <div
+          className="pointer-events-none absolute -inset-px transition-opacity duration-300 z-0 rounded-2xl"
+          style={{
+            opacity: isFocused ? 1 : 0,
+            background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(124, 58, 237, 0.15), transparent 40%)`,
+          }}
+        />
+
+        <div className="relative z-10">
+          <div className="relative w-full h-40 rounded-xl overflow-hidden bg-gray-900/50">
+            <Image
+              src={image}
+              alt={name}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
+          
+          <h3 className="text-lg font-medium mt-3 text-white">
+            {name}
+          </h3>
+          
+          <p className="text-gray-300 font-semibold mt-1">
+            R$ {price.toFixed(2)}
+          </p>
         </div>
-        
-        <h3 className="text-lg font-semibold mt-3 text-gray-900 dark:text-white">
-          {name}
-        </h3>
-        
-        <p className="text-gray-700 dark:text-gray-300 font-semibold mt-1">
-          R$ {price.toFixed(2)}
-        </p>
       </div>
 
+      {/* Modal */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <div
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full relative shadow-lg max-h-[90vh] overflow-y-auto border border-gray-300 dark:border-gray-600"
+            className="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-md w-full relative shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 text-3xl font-bold hover:text-red-500 dark:hover:text-red-400 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 text-2xl hover:text-red-400 transition-colors"
               aria-label="Fechar modal"
             >
               &times;
             </button>
             
-            <div className="relative w-full h-52 rounded-xl overflow-hidden mb-4">
+            <div className="relative w-full h-52 rounded-xl overflow-hidden mb-4 bg-gray-800">
               <Image
                 src={image}
                 alt={name}
@@ -79,15 +117,15 @@ export function Card({ name, price, image, description }: CardProps) {
               />
             </div>
             
-            <h2 id="modal-title" className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+            <h2 id="modal-title" className="text-xl font-bold mb-2 text-white">
               {name}
             </h2>
             
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-gray-300 mb-4">
               {description}
             </p>
             
-            <p className="text-lg font-semibold text-gray-800 dark:text-white">
+            <p className="text-lg font-bold text-purple-400">
               R$ {price.toFixed(2)}
             </p>
           </div>
