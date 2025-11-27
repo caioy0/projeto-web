@@ -4,14 +4,30 @@
 import prisma from '@/lib/prisma';
 import nodemailer from 'nodemailer';
 
-type OrderItemInput = {
+export type OrderItemInput = {
   productId: string;
   quantity: number;
 };
 
-type CreateOrderInput = {
+export type CreateOrderInput = {
   userId: string;
   items: OrderItemInput[];
+};
+
+export type OrderItem = {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+};
+
+export type Order = {
+  id: string;
+  user: { name: string; email: string };
+  total: number;
+  status: string;
+  items: OrderItem[];
+  createdAt: Date;
 };
 
 // Configuração do SMTP
@@ -50,7 +66,7 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
   });
 }
 
-// CREATE
+// CREATE (POST)
 export async function createOrder({ userId, items }: CreateOrderInput) {
   if (!userId || !items || items.length === 0) {
     throw new Error('Dados inválidos para criar pedido.');
@@ -82,7 +98,7 @@ export async function createOrder({ userId, items }: CreateOrderInput) {
   return order;
 }
 
-// GET all orders
+// GET ListarTodos
 export async function listAllOrders() {
   return prisma.order.findMany({
     include: { items: true, user: true },
@@ -90,16 +106,16 @@ export async function listAllOrders() {
   });
 }
 
-// GET orders by user
+// GET ListarPorCliente
 export async function listOrdersByUser(userId: string) {
   return prisma.order.findMany({
     where: { userId },
-    include: { items: true },
+    include: { items: true, user: true }, // ✅ agora inclui user
     orderBy: { createdAt: 'desc' },
   });
 }
 
-// GET order by ID
+// GET por código
 export async function getOrderById(orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -109,15 +125,16 @@ export async function getOrderById(orderId: string) {
   return order;
 }
 
-// UPDATE order
+// UPDATE (PUT)
 export async function updateOrder(orderId: string, data: { status?: string; total?: number }) {
   return prisma.order.update({
     where: { id: orderId },
     data,
+    include: { items: true, user: true },
   });
 }
 
-// DELETE order
+// DELETE
 export async function deleteOrder(orderId: string) {
   return prisma.order.delete({
     where: { id: orderId },
