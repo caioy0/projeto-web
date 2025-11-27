@@ -10,7 +10,14 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Helper: pegar usuário logado
 async function getCurrentUser() {
-  const token = (await cookies()).get('token')?.value;
+  // tenta pegar 'token' primeiro
+  let token = (await cookies()).get('token')?.value;
+
+  // se não existir, tenta 'session'
+  if (!token) {
+    token = (await cookies()).get('session')?.value;
+  }
+
   if (!token) return null;
 
   try {
@@ -33,6 +40,7 @@ export async function updateUserSettings(data: { name?: string; email?: string }
       name: data.name ?? user.name,
       email: data.email ?? user.email,
     },
+    select: { id: true, name: true, email: true, active: true }, // não retorna senha
   });
 
   return updatedUser;
@@ -42,13 +50,14 @@ export async function updateUserSettings(data: { name?: string; email?: string }
 export async function updateUserPassword(data: { currentPassword: string; newPassword: string }) {
   const user = await getCurrentUser();
   if (!user) throw new Error('Usuário não autenticado');
+  if (!user.password) throw new Error('Usuário não possui senha definida');
 
   const valid = await bcrypt.compare(data.currentPassword, user.password);
   if (!valid) throw new Error('Senha atual incorreta');
 
   const hashedPassword = await bcrypt.hash(data.newPassword, 10);
 
-    await prisma.user.update({
+  await prisma.user.update({
     where: { id: user.id },
     data: { password: hashedPassword },
   });
@@ -64,6 +73,7 @@ export async function toggleUserActive() {
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: { active: !user.active },
+    select: { id: true, name: true, email: true, active: true }, // não retorna senha
   });
 
   return updatedUser;

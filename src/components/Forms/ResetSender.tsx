@@ -46,7 +46,7 @@ export default function ResetSender() {
         setError(data.error || "Não foi possível enviar o link. Tente novamente.");
       }
     } catch (err) {
-      setError("Ocorreu um erro de conexão. Tente mais tarde.");
+      setError(`Ocorreu um erro de conexão, erro:${err}. Tente mais tarde.`);
     } finally {
       setIsLoading(false);
     }

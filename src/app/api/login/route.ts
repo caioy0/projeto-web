@@ -2,6 +2,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function POST(req: Request) {
   try {
@@ -12,13 +15,11 @@ export async function POST(req: Request) {
     }
 
     const client = await prisma.user.findUnique({ where: { email } });
-
     if (!client) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
     const passwordMatches = await bcrypt.compare(password, client.password);
-
     if (!passwordMatches) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
@@ -27,16 +28,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Account not activated" }, { status: 403 });
     }
 
-    // 🔑 Aqui você gera um token simples (pode ser JWT ou apenas o ID do usuário)
-    const sessionToken = client.id.toString(); // exemplo simples, em produção use JWT
+    // 🔑 Gera JWT com userId
+    const token = jwt.sign({ userId: client.id }, JWT_SECRET, { expiresIn: "1d" });
 
     const response = NextResponse.json(
-      { message: "Login successful", client },
+      { message: "Login successful", client: { id: client.id, name: client.name, email: client.email } },
       { status: 200 }
     );
 
-    // Define cookie de sessão
-    response.cookies.set("session", sessionToken, {
+    // Define cookie de sessão com JWT
+    response.cookies.set("session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
