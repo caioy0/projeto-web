@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { getServerUser } from "@/lib/getServerUser";
 import TextPressure from "@/components/TextPressure";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 type CartItem = {
   productId: string;
@@ -54,7 +55,7 @@ if (!user) {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link 
                 href="/login"
-                className="group relative px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(147,51,234,0.5)]"
+                className="group relative px-8 py-3 rounded-xl bg-linear-to-r from-purple-600 to-blue-600 text-white font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(147,51,234,0.5)]"
               >
                 Fazer Login
                 <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -85,9 +86,13 @@ if (!user) {
       : [];
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Seu Carrinho</h1>
-      <CartClient items={items} userId={user.id} />
-    </div>
+    <main className="p-12">
+      <div>
+        <Header />
+      </div>
+      <div className="p-6 max-w-3xl mx-auto">
+        <CartClient items={items} userId={user.id} />
+      </div>
+    </main>
   );
 }

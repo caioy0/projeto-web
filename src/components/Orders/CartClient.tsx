@@ -1,6 +1,7 @@
+// @/components/Orders/CartClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createOrder } from "@/actions/createOrder";
 import { updateCart } from "@/actions/cart";
 import { useRouter } from "next/navigation";
@@ -29,9 +30,42 @@ interface CartClientProps {
 }
 
 export default function CartClient({ items, userId }: CartClientProps) {
-  const [cartItems, setCartItems] = useState(items);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+    const [userId2, setUserId] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [cartItems, setCartItems] = useState(items);
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+  
+    // Busca userId e token logo ao montar
+    useEffect(() => {
+      (async () => {
+        try {
+          // 1. Verifica se está autenticado
+          const authRes = await fetch("/api/auth/status", { cache: "no-store" });
+          const authData = await authRes.json();
+  
+          if (!authData.isAuthenticated) {
+            router.push("/login");
+            return;
+          }
+  
+          // 2. Busca o userId
+          const meRes = await fetch("/api/auth/me", { cache: "no-store" });
+          const meData = await meRes.json();
+          if (!meData.userId) throw new Error("Não foi possível obter o usuário.");
+          setUserId(meData.userId);
+  
+          // 3. Recupera o token do localStorage (se você salvar lá)
+          const storedToken = localStorage.getItem("token");
+          setToken(storedToken ?? null);
+        } catch (error) {
+          console.error(error);
+          router.push("/");
+        }
+      })();
+    }, [router]);
+  
+  
 
   // Calcular total
   const totalAmount = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -46,13 +80,13 @@ export default function CartClient({ items, userId }: CartClientProps) {
     setCartItems(newItems);
     
     // Atualiza backend em background (debounce seria ideal aqui em produção)
-    await updateCart(userId, newItems);
+    await updateCart(userId, newItems, token);
   };
 
   const removeItem = async (productId: string) => {
     const newItems = cartItems.filter((i) => i.productId !== productId);
     setCartItems(newItems);
-    await updateCart(userId, newItems);
+    await updateCart(userId, newItems, token);
   };
 
   const finishOrder = async () => {
@@ -85,7 +119,7 @@ export default function CartClient({ items, userId }: CartClientProps) {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 text-zinc-100">
-      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-blue-600 bg-clip-text text-transparent">
+      <h1 className="text-3xl font-bold mb-8 bg-linear-to-r from-purple-400 to-blue-600 bg-clip-text text-transparent">
         Seu Carrinho
       </h1>
 
@@ -99,7 +133,7 @@ export default function CartClient({ items, userId }: CartClientProps) {
             >
               <div className="flex-1">
                 <h3 className="font-semibold text-lg text-white mb-1">{item.name}</h3>
-                <p className="text-zinc-400 text-sm">Unitário: R$ {item.price.toFixed(2)}</p>
+                <p className="text-zinc-400 text-sm">Unitário: R$ {item.price}</p>
                 <p className="text-purple-400 font-medium sm:hidden mt-2">
                    Total: R$ {(item.price * item.quantity).toFixed(2)}
                 </p>
@@ -170,14 +204,14 @@ export default function CartClient({ items, userId }: CartClientProps) {
 
             <button
               disabled={loading}
-              className="w-full relative group overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-purple-900/20"
+              className="w-full relative group overflow-hidden bg-linear-to-r from-purple-600 to-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-purple-900/20"
               onClick={finishOrder}
             >
               <span className="relative z-10">
                 {loading ? "Processando..." : "Finalizar Compra"}
               </span>
               {/* Efeito de brilho no hover */}
-              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000" />
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000" />
             </button>
           </div>
         </div>

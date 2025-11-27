@@ -1,8 +1,9 @@
 // src/components/Cards.tsx
 'use client'
 
-import { useState, useRef, MouseEvent } from "react";
+import { useState, useRef, MouseEvent, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { updateCart } from "@/actions/cart"; 
 
 // Ícones
@@ -23,7 +24,7 @@ type CardProps = {
   salePrice?: number
 }
 
-export function Card({ id, name, price, salePrice, image, category = "Jogo", description, userId }: CardProps) {
+export function Card({ id, name, price, salePrice, image, category = "Jogo", description }: CardProps) {
   const [isOpen, setIsOpen] = useState(false)
   const divRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false)
@@ -42,23 +43,57 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
     divRef.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
+  const [userId, setUserId] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
+
+  // Busca userId e token logo ao montar
+  useEffect(() => {
+    (async () => {
+      try {
+        // 1. Verifica se está autenticado
+        const authRes = await fetch("/api/auth/status", { cache: "no-store" });
+        const authData = await authRes.json();
+
+        if (!authData.isAuthenticated) {
+          router.push("/login");
+          return;
+        }
+
+        // 2. Busca o userId
+        const meRes = await fetch("/api/auth/me", { cache: "no-store" });
+        const meData = await meRes.json();
+        if (!meData.userId) throw new Error("Não foi possível obter o usuário.");
+        setUserId(meData.userId);
+
+        // 3. Recupera o token do localStorage (se você salvar lá)
+        const storedToken = localStorage.getItem("token");
+        setToken(storedToken ?? null);
+      } catch (error) {
+        console.error(error);
+        router.push("/");
+      }
+    })();
+  }, [router]);
+
+  // Agora o handleAddToCart não precisa do if (!userId)
   const handleAddToCart = async (e?: React.MouseEvent) => {
     e?.stopPropagation(); 
-    if (!userId) {
-      alert("Você precisa estar logado para adicionar ao carrinho."); 
-      return;
-    }
-
     setLoading(true);
     try {
-      await updateCart(userId, [{ productId: id, quantity: 1 }]);
-      alert("Adicionado!"); 
+      await updateCart(
+        userId!, // já garantido pelo useEffect
+        [{ productId: id, quantity: 1 }],
+        token // passa o token também
+      );
+      alert("Adicionado!");
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <>
@@ -79,14 +114,14 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
         {/* --- LÓGICA DA BARRA SUPERIOR (SALE VS NORMAL) --- */}
         {hasDiscount ? (
           // Barra de Promoção (Vermelha) com Texto
-          <div className="absolute top-0 left-0 right-0 h-7 bg-gradient-to-r from-red-600 to-rose-600 z-20 flex items-center justify-center">
+          <div className="absolute top-0 left-0 right-0 h-7 bg-linear-to-r from-red-600 to-rose-600 z-20 flex items-center justify-center">
              <span className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1">
                <TimerIcon /> Oferta por tempo limitado
              </span>
           </div>
         ) : (
           // Barra Decorativa Padrão (Roxa)
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 to-blue-600 z-20" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-purple-600 to-blue-600 z-20" />
         )}
 
         <div className={`relative aspect-video w-full overflow-hidden bg-zinc-800 ${hasDiscount ? 'mt-6' : ''}`}> 
@@ -112,7 +147,7 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
           )}
         </div>
 
-        <div className="relative flex flex-col flex-grow p-4 z-20 bg-zinc-900">
+        <div className="relative flex flex-col grow p-4 z-20 bg-zinc-900">
           <h3 className="text-base font-bold text-white line-clamp-1 mb-1" title={name}>
             {name}
           </h3>
@@ -176,7 +211,7 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
                 fill
                 className="object-cover opacity-90"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent md:bg-gradient-to-r" />
+              <div className="absolute inset-0 bg-linear-to-t from-zinc-900 via-transparent to-transparent md:bg-linear-to-r" />
               
               {/* Badge de Promoção no Modal */}
               {hasDiscount && (
@@ -196,7 +231,7 @@ export function Card({ id, name, price, salePrice, image, category = "Jogo", des
                   {name}
                 </h2>
                 
-                <div className={`h-1 w-20 rounded-full mb-6 ${hasDiscount ? 'bg-gradient-to-r from-red-600 to-rose-600' : 'bg-gradient-to-r from-purple-600 to-blue-600'}`} />
+                <div className={`h-1 w-20 rounded-full mb-6 ${hasDiscount ? 'bg-linear-to-r from-red-600 to-rose-600' : 'bg-linear-to-r from-purple-600 to-blue-600'}`} />
                 
                 <p className="text-zinc-400 text-sm leading-relaxed mb-6">
                   {description}
