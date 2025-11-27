@@ -137,6 +137,11 @@ export default function LoginForm({ onSuccessRedirect = '/' }: LoginFormProps) {
               Registre-se aqui
             </Link>
           </p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">
+            <Link href="/reset-sender" className="text-purple-400 hover:text-purple-300 font-medium transition-colors hover:underline">
+              Esqueceu sua senha?
+            </Link>
+          </p>
         </div>
 
       </div>
