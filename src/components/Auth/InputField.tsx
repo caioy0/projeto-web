@@ -6,6 +6,8 @@ interface InputFieldProps {
   error?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  className?: string;
+  labelClassName?: string;
 }
 
 export default function InputField({
