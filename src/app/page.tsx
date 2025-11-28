@@ -31,7 +31,7 @@ return (
         
         <div className="mt-8 mb-8 flex flex-wrap flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-6">
           <div className="md:order-2">
-            <Filter category={category} search={search} /> 
+            <Filter category={category} search={search} categories={[]} /> 
           </div>
           <div className="md:order-1 w-full md:w-auto">
             <SearchBar search={search} category={category} />

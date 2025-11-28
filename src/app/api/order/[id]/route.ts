@@ -8,11 +8,7 @@ type OrderItemInput = {
   quantity: number;
 };
 
-<<<<<<< HEAD
-// Função para enviar email quando o pedido for confirmado
-=======
 // Função para enviar email via SMTP
->>>>>>> prod
 async function sendOrderEmail(to: string, name: string, orderId: string) {
   const orderLink = `${process.env.NEXT_PUBLIC_APP_URL}/order/${orderId}`;
 
@@ -42,21 +38,6 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
     </div>
   `;
 
-<<<<<<< HEAD
-  // Configuração do Nodemailer
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST, // Ex: smtp.gmail.com
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false, // true se usar 465
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
-  // Envia o email
-=======
->>>>>>> prod
   await transporter.sendMail({
     from: `"CloudGames" <${process.env.SMTP_USER}>`,
     to,
@@ -70,10 +51,6 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-<<<<<<< HEAD
-    const body: { userId: string; items: OrderItemInput[] } = await req.json();
-    const { userId, items } = body;
-=======
     const { id } = await context.params;
 
     const orders = await prisma.order.findMany({
@@ -86,7 +63,6 @@ export async function GET(
       },
       orderBy: { createdAt: "desc" },
     });
->>>>>>> prod
 
     if (!orders || orders.length === 0) {
       return NextResponse.json(
@@ -95,9 +71,6 @@ export async function GET(
       );
     }
 
-<<<<<<< HEAD
-    // Buscar produtos e calcular total
-=======
     return NextResponse.json(orders, { status: 200 });
   } catch (error) {
     console.error("GET /api/order/client/[id] error:", error);
@@ -120,7 +93,6 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
     }
 
     // Buscar produtos e recalcular total
->>>>>>> prod
     const products = await prisma.product.findMany({
       where: { id: { in: items.map((i) => i.productId) } },
     });
@@ -128,24 +100,6 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
     let total = 0;
     const orderItemsData = items.map((i) => {
       const product = products.find((p) => p.id === i.productId);
-<<<<<<< HEAD
-
-      if (!product) throw new Error(`Produto: ${i.productId} não encontrado!`);
-
-      const price =
-        product.sale && product.salePrice ? product.salePrice : product.price;
-      total += Number(price) * i.quantity;
-
-      return {
-        productId: i.productId,
-        quantity: i.quantity,
-        price,
-      };
-    });
-
-    // Criar pedido
-    const order = await prisma.order.create({
-=======
       if (!product) throw new Error(`Produto ${i.productId} não encontrado`);
       const price = product.sale && product.salePrice ? product.salePrice : product.price;
       total += Number(price) * i.quantity;
@@ -155,7 +109,6 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
     // Atualizar pedido
     const order = await prisma.order.update({
       where: { id },
->>>>>>> prod
       data: {
         total,
         items: {
@@ -166,11 +119,7 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
       include: { items: true, user: true },
     });
 
-<<<<<<< HEAD
-    // Enviar email de confirmação
-=======
     // Enviar email de atualização
->>>>>>> prod
     await sendOrderEmail(order.user.email, order.user.name, order.id);
 
     return NextResponse.json(order, { status: 200 });

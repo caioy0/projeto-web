@@ -5,13 +5,8 @@ generator client {
 }
 
 datasource db {
-<<<<<<< HEAD
-  provider = "postgresql"
-  url      = env("LOCAL_URL")
-=======
   provider = "mongodb"
   url      = env("MONGO_URI")
->>>>>>> prod
 }
 
 model User {
