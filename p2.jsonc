@@ -1,0 +1,37 @@
+{
+  // P2
+  "equipe": "Mesma equipe da P1",
+
+  "apresentacao": {
+    "local": "Laboratório",
+    "periodo": "Semana de provas P2"
+  },
+
+  "avaliacao": {
+    "nota_total": 10,
+    "distribuicao": {
+      "projeto_final": 7,
+      "atividades_somadas": 3
+    }
+  },
+
+  "entrega": {
+    "formato": "Arquivos compactados ou repositório online (GIT, Google Drive, etc.)",
+    "local": "Atividade P2 no MS Teams"
+  },
+
+  "requisitos_tecnicos": {
+    "framework": "Next",
+    "integracao_api": "APIs desenvolvidas na P1 com persistência em banco de dados",
+    "responsividade": "tailwind css",
+    "recursos_next": "Utilização de componentes, serviços, rotas e data binding"
+  },
+
+  "criterios_avaliacao": {
+    "1": "Programa de acordo com o solicitado",
+    "2": "Design responsivo",
+    "3": "Qualidade, detalhamento e padronização de identidade visual",
+    "4": "Ausência de erros e falhas de execução",
+    "5": "Criatividade"
+  }
+}

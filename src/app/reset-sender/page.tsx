@@ -1,5 +1,7 @@
-"use client";
+import ResetSender from "@/components/Forms/ResetSender";
+import Header from "@/components/Header";
 
+<<<<<<< HEAD
 import { useState } from "react";
 
 export default function ResetSender() {
@@ -98,3 +100,17 @@ export default function ResetSender() {
     </div>
   );
 }
+=======
+export default async function ResetPage(){
+    return (
+        <main>
+            <div>
+                <Header></Header>
+            </div>
+            <div>
+                <ResetSender></ResetSender>
+            </div>
+        </main>
+    )
+}
+>>>>>>> prod

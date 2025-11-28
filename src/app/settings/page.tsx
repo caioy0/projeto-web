@@ -1,10 +1,15 @@
 // src/app/settings/page.tsx
 
-import React from "react";
-import UserSettings from "@/components/UserSettings";
+import UserConfig from "@/components/UserSettings/UserConfig";
+import Header from "@/components/Header";
 
-const SettingsPage = () => {
-  return <UserSettings />;
-};
-
-export default SettingsPage;
+export default async function UserSettingPage (){
+  return (
+    <main>
+      <div>
+        <Header/>
+      </div>
+      <UserConfig/>
+    </main>
+  );
+}

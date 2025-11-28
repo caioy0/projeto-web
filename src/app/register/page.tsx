@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client"
 
 import React, { useState } from 'react';
@@ -75,79 +76,21 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+=======
+// @/app/register/page.tsx
+import Header from "@/components/Header";
+import RegisterForm from "@/components/Forms/RegisterForm";
+>>>>>>> prod
 
+export default async function RegisterPage(){
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-8">
-        <AuthCard title="Create your account">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {errors.submit && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                {errors.submit}
-              </div>
-            )}
-            
-            <InputField
-              label="Full Name"
-              name="name"
-              type="text"
-              value={formData.name}
-              error={errors.name}
-              onChange={handleChange}
-              required
-            />
-            
-            <InputField
-              label="Email Address"
-              name="email"
-              type="email"
-              value={formData.email}
-              error={errors.email}
-              onChange={handleChange}
-              required
-            />
-            
-            <InputField
-              label="Password"
-              name="password"
-              type="password"
-              value={formData.password}
-              error={errors.password}
-              onChange={handleChange}
-              required
-            />
-            
-            <PasswordStrength password={formData.password} />
-            
-            <InputField
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              error={errors.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-            
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-200 disabled:opacity-50"
-            >
-              {isLoading ? 'Creating account...' : 'Create account'}
-            </button>
-            
-            <p className="text-center text-gray-600 dark:text-gray-400">
-              Already have an account?{' '}
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-                Sign in
-              </Link>
-            </p>
-          </form>
-        </AuthCard>
-      </main>
-    </div>
+    <main>
+      <div>
+        <Header/>
+      </div>
+      <div>
+        <RegisterForm/>
+      </div>
+    </main>
   );
 }

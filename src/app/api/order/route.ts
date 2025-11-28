@@ -1,18 +1,28 @@
 // src/app/api/order/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY!);
+import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
 
 type OrderItemInput = {
   productId: string;
   quantity: number;
 };
 
-// Func to send mail when order
+// Função para enviar email de confirmação via SMTP
 async function sendOrderEmail(to: string, name: string, orderId: string) {
-  const orderLink = `http://localhost:3000/order/${orderId}`;
+  const orderLink = `${process.env.NEXT_PUBLIC_APP_URL}/order/${orderId}`;
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === "true", // true se SSL
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
       <h1>Olá, ${name}! 👋</h1>
@@ -29,59 +39,86 @@ async function sendOrderEmail(to: string, name: string, orderId: string) {
     </div>
   `;
 
-  await resend.emails.send({
-    from: "no-reply@cloudgames.com",
+  await transporter.sendMail({
+    from: `"CloudGames" <${process.env.SMTP_USER}>`,
     to,
     subject: "Confirmação do seu pedido",
     html,
   });
 }
 
-// POST
+// Extrai userId do token JWT
+function getUserIdFromRequest(req: Request) {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) return null;
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    return payload.userId;
+  } catch {
+    return null;
+  }
+}
+
+// POST - criar pedido
 export async function POST(req: Request) {
   try {
-    const body: { userId: string; items: OrderItemInput[] } = await req.json();
+    const userId = getUserIdFromRequest(req);
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { userId, items } = body;
+    const body: { items: OrderItemInput[] } = await req.json();
+    const { items } = body;
 
-    if (!userId || !items || items.length === 0) {
-      return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
+    if (!items || items.length === 0) {
+      return NextResponse.json({ error: "Itens do pedido são obrigatórios" }, { status: 400 });
     }
 
-    // Search prod and calculate
-    const products = await prisma.product.findMany({
-      where: { id: { in: items.map((i) => i.productId) } },
-    });
+    // Transação Prisma
+    const order = await prisma.$transaction(async (tx) => {
+      const products = await tx.product.findMany({
+        where: { id: { in: items.map((i) => i.productId) } },
+      });
 
-    let total = 0;
-    const orderItems = items.map((i) => {
-      const product = products.find((p) => p.id === i.productId);
-    // errors
-      if (!product) 
-        throw new Error(`Product: ${i.productId} not found!`);
-      
-      const price = product.sale && product.salePrice ? product.salePrice : product.price;
-      total += Number(price) * i.quantity;
-      return {
-        productId: i.productId,
-        quantity: i.quantity,
-        price,
-      };
-    });
+      let total = 0;
+      const orderItemsData = items.map((i) => {
+        const product = products.find((p) => p.id === i.productId);
+        if (!product) throw new Error(`Produto ${i.productId} não encontrado`);
+        if (product.quantity < i.quantity) throw new Error(`Estoque insuficiente para ${product.name}`);
 
-    // Create ordergsdt
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        total,
-        items: {
-          create: orderItems,
+        const price = product.sale && product.salePrice ? product.salePrice : product.price;
+        total += Number(price) * i.quantity;
+
+        return {
+          productId: i.productId,
+          quantity: i.quantity,
+          price,
+        };
+      });
+
+      // Atualiza estoque dos produtos
+      for (const item of orderItemsData) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { quantity: { decrement: item.quantity } },
+        });
+      }
+
+      // Cria pedido e itens
+      const orderCreated = await tx.order.create({
+        data: {
+          userId,
+          total,
+          status: "pending",
+          items: { create: orderItemsData },
         },
-      },
-      include: { items: true, user: true },
+        include: { items: true, user: true },
+      });
+
+      return orderCreated;
     });
 
-    // Send mail call
+    // Envia email
     await sendOrderEmail(order.user.email, order.user.name, order.id);
 
     return NextResponse.json(order, { status: 201 });

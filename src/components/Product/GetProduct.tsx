@@ -1,5 +1,4 @@
 // @/component/Product/GetProduct.tsx
-
 import prisma from "@/lib/prisma";
 import { Card } from "@/components/Cards";
 
@@ -24,7 +23,7 @@ export default async function GetProduct() {
           id={product.id}
           name={product.name}
           price={Number(product.price)}
-          image={product.image ?? "/placeholder.png"}
+          image={product.image ?? "/placeholder.jpg"}
           description={product.description ?? ""}
           category={product.categoryId ?? " "}
         />

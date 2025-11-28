@@ -5,68 +5,99 @@ generator client {
 }
 
 datasource db {
+<<<<<<< HEAD
   provider = "postgresql"
   url      = env("LOCAL_URL")
+=======
+  provider = "mongodb"
+  url      = env("MONGO_URI")
+>>>>>>> prod
 }
 
 model User {
-  id              String   @id @default(cuid())
-  name            String
-  email           String   @unique(map: "User_email_key")
-  password        String
-  active          Boolean  @default(false)
-  activationToken String?  @unique(map: "User_activationToken_key")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  order           Order[]
-}
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+  age      Int?
 
-model Product {
-  id          String      @id @default(cuid())
-  name        String
-  description String
-  price       Decimal
-  sale        Boolean     @default(false)
-  salePrice   Decimal?
-  quantity    Int
-  categoryId  String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  image       String?
-  category    Category    @relation(fields: [categoryId], references: [id])
-  orderitem   OrderItem[]
-}
+  role Role @default(CLIENT)
 
-model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  products  Product[]
-}
+  active          Boolean @default(false)
+  activationToken String?
 
-model Order {
-  id        String      @id @default(cuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
-  total     Decimal     @default(0)
-  status    String      @default("pending") // pending, paid, shipped, canceled, etc.
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-}
+  resetToken       String? // token temporário
+  resetTokenExpiry DateTime?
 
-model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Decimal // preço unitário no momento do pedido
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([orderId, productId]) // evita duplicar o mesmo produto no mesmo pedido
+  orders Order[]
+  Cart   Cart?
+}
+
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  price       Float
+  sale        Boolean  @default(false)
+  salePrice   Float?
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  image       String?
+
+  categoryId String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  orderItems OrderItem[]
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+}
+
+model Order {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  total     Float    @default(0)
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderId   String  @db.ObjectId
+  productId String  @db.ObjectId
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Cart {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId
+  items  Json
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  CLIENT
+  ADMIN
 }

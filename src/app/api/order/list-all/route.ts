@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 // GET - listar todos os pedidos
+<<<<<<< HEAD
 export async function GET(req: Request) {
+=======
+export async function GET() {
+>>>>>>> prod
   try {
     // Buscar todos os pedidos
     const orders = await prisma.order.findMany({
@@ -19,4 +23,8 @@ export async function GET(req: Request) {
     console.error("Erro ao listar todos os pedidos:", error);
     return NextResponse.json({ error: "Erro ao listar pedidos" }, { status: 500 });
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> prod
